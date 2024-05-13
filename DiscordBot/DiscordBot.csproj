@@ -18,7 +18,7 @@
 
     <ItemGroup>
         <PackageReference Include="Discord.Addons.Hosting" Version="6.0.0" />
-        <PackageReference Include="Discord.Net" Version="3.14.1" />
+        <PackageReference Include="Discord.Net" Version="3.15.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4">
           <PrivateAssets>all</PrivateAssets>
@@ -34,7 +34,7 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="8.0.0" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
         <PackageReference Include="OneOf" Version="3.0.263" />
         <PackageReference Include="Serilog" Version="3.1.1" />
         <PackageReference Include="Serilog.Extensions.Autofac.DependencyInjection" Version="5.0.0" />
