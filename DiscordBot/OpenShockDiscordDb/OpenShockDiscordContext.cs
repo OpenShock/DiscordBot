@@ -19,6 +19,8 @@ public partial class OpenShockDiscordContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    public virtual DbSet<UsersFriendwhitelist> UsersFriendwhitelists { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<GuildActiveShocker>(entity =>
@@ -32,18 +34,17 @@ public partial class OpenShockDiscordContext : DbContext
             entity.Property(e => e.ShockerId).HasColumnName("shocker_id");
             entity.Property(e => e.LimitDuration).HasColumnName("limit_duration");
             entity.Property(e => e.LimitIntensity).HasColumnName("limit_intensity");
-            entity.Property(e => e.Paused).HasColumnName("paused");
+            entity.Property(e => e.Paused)
+                .HasDefaultValue(false)
+                .HasColumnName("paused");
             entity.Property(e => e.PermShock)
-                .IsRequired()
-                .HasDefaultValueSql("true")
+                .HasDefaultValue(true)
                 .HasColumnName("perm_shock");
             entity.Property(e => e.PermSound)
-                .IsRequired()
-                .HasDefaultValueSql("true")
+                .HasDefaultValue(true)
                 .HasColumnName("perm_sound");
             entity.Property(e => e.PermVibrate)
-                .IsRequired()
-                .HasDefaultValueSql("true")
+                .HasDefaultValue(true)
                 .HasColumnName("perm_vibrate");
 
             entity.HasOne(d => d.Discord).WithMany(p => p.GuildActiveShockers)
@@ -57,7 +58,9 @@ public partial class OpenShockDiscordContext : DbContext
 
             entity.ToTable("users");
 
-            entity.HasIndex(e => e.OpenshockId, "users_openshock_id").IsUnique();
+            entity.HasIndex(e => e.OpenshockId, "users_openshock_id")
+                .IsUnique()
+                .HasAnnotation("Npgsql:StorageParameter:deduplicate_items", "true");
 
             entity.Property(e => e.DiscordId).HasColumnName("discord_id");
             entity.Property(e => e.ApiKey)
@@ -70,6 +73,19 @@ public partial class OpenShockDiscordContext : DbContext
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("created_on");
             entity.Property(e => e.OpenshockId).HasColumnName("openshock_id");
+        });
+
+        modelBuilder.Entity<UsersFriendwhitelist>(entity =>
+        {
+            entity.HasKey(e => new { e.User, e.WhitelistedFriend }).HasName("users_friendwhitelist_pkey");
+
+            entity.ToTable("users_friendwhitelist");
+
+            entity.Property(e => e.User).HasColumnName("user");
+            entity.Property(e => e.WhitelistedFriend).HasColumnName("whitelisted_friend");
+            entity.Property(e => e.CreatedOn)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnName("created_on");
         });
 
         OnModelCreatingPartial(modelBuilder);

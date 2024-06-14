@@ -1,0 +1,1 @@
+﻿dotnet ef dbcontext scaffold "Host=docker-node;Port=1337;Database=discord-bot;Username=root;Password=root" Npgsql.EntityFrameworkCore.PostgreSQL -c OpenShockDiscordContext -o OpenShockDiscordDb -f

@@ -13,11 +13,11 @@ public partial class GuildActiveShocker
 
     public bool Paused { get; set; }
 
-    public bool? PermSound { get; set; }
+    public bool PermSound { get; set; }
 
-    public bool? PermVibrate { get; set; }
+    public bool PermVibrate { get; set; }
 
-    public bool? PermShock { get; set; }
+    public bool PermShock { get; set; }
 
     public int? LimitDuration { get; set; }
 
