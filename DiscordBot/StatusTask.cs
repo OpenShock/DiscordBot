@@ -5,6 +5,7 @@ using Discord.WebSocket;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OpenShock.DiscordBot.Backend.Models;
+using OpenShock.SDK.CSharp.Models;
 using Timer = System.Timers.Timer;
 
 namespace OpenShock.DiscordBot;
