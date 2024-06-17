@@ -20,6 +20,8 @@ public partial class OpenShockDiscordContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UsersFriendwhitelist> UsersFriendwhitelists { get; set; }
+
+    public virtual DbSet<UsersShocker> UsersShockers { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -81,11 +83,34 @@ public partial class OpenShockDiscordContext : DbContext
 
             entity.ToTable("users_friendwhitelist");
 
+            entity.HasIndex(e => e.WhitelistedFriend, "friend_id").HasAnnotation("Npgsql:StorageParameter:deduplicate_items", "true");
+
             entity.Property(e => e.User).HasColumnName("user");
             entity.Property(e => e.WhitelistedFriend).HasColumnName("whitelisted_friend");
             entity.Property(e => e.CreatedOn)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("created_on");
+
+            entity.HasOne(d => d.UserNavigation).WithMany(p => p.UsersFriendwhitelists)
+                .HasForeignKey(d => d.User)
+                .HasConstraintName("fk_user");
+        });
+
+        modelBuilder.Entity<UsersShocker>(entity =>
+        {
+            entity.HasKey(e => new { e.User, e.ShockerId }).HasName("users_shockers_pkey");
+
+            entity.ToTable("users_shockers");
+
+            entity.Property(e => e.User).HasColumnName("user");
+            entity.Property(e => e.ShockerId).HasColumnName("shocker_id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnName("created_at");
+
+            entity.HasOne(d => d.UserNavigation).WithMany(p => p.UsersShockers)
+                .HasForeignKey(d => d.User)
+                .HasConstraintName("fk_user");
         });
 
         OnModelCreatingPartial(modelBuilder);

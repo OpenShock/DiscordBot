@@ -16,4 +16,8 @@ public partial class User
     public string ApiKey { get; set; } = null!;
 
     public virtual ICollection<GuildActiveShocker> GuildActiveShockers { get; set; } = new List<GuildActiveShocker>();
+
+    public virtual ICollection<UsersFriendwhitelist> UsersFriendwhitelists { get; set; } = new List<UsersFriendwhitelist>();
+
+    public virtual ICollection<UsersShocker> UsersShockers { get; set; } = new List<UsersShocker>();
 }
