@@ -1,6 +1,16 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
+WORKDIR /src
+COPY *.sln .
+COPY DiscordBot/*.csproj ./DiscordBot/
+RUN dotnet restore
+
+COPY . .
+RUN dotnet publish -c Release -o /publish --no-restore
+
+
 FROM mcr.microsoft.com/dotnet/runtime:8.0-alpine
 WORKDIR /app
-COPY publish .
+COPY --from=build /publish .
 RUN apk add --no-cache icu-libs
 
 ENTRYPOINT ["dotnet", "OpenShock.DiscordBot.dll"]

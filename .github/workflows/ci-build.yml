@@ -18,40 +18,7 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
-
   build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      
-      - name: Setup .NET SDK ${{ env.DOTNET_VERSION }}
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-      
-      - name: Install dependencies
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
-
-      - name: Test
-        run: dotnet test --no-restore --verbosity normal
-      
-      - name: Publish Discord Bot
-        run: dotnet publish DiscordBot/DiscordBot.csproj -c Release -o ./publish/DiscordBot
-      
-      - name: Upload Discord Bot artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: DiscordBot
-          path: publish/DiscordBot/*
-          retention-days: 1
-          if-no-files-found: error
-      
-  containerize:
     runs-on: ubuntu-latest
     needs: build
 
