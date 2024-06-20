@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
 using OpenShock.DiscordBot.Services;
+using OpenShock.DiscordBot.Services.UserRepository;
 using OpenShock.DiscordBot.Utils;
 using Serilog;
 
@@ -56,6 +57,8 @@ public class OpenShockDiscordBot
 
             services.AddDbContextPool<OpenShockDiscordContext>(x => { x.UseNpgsql(discordBotConfig.Db); });
 
+            services.AddSingleton<IUserRepository, UserRepository>();
+            
             services.AddSingleton(new DiscordSocketClient());
             services.AddSingleton<InteractionService>(x =>
                 new InteractionService(x.GetRequiredService<DiscordSocketClient>()));

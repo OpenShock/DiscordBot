@@ -6,30 +6,13 @@ using OpenShock.DiscordBot.OpenShockDiscordDb;
 using OpenShock.SDK.CSharp;
 using OpenShock.SDK.CSharp.Models;
 
-namespace OpenShock.DiscordBot.Commands;
+namespace OpenShock.DiscordBot.Commands.Setup;
 
-/// <summary>
-/// Command and modal to setup a users credentials for OpenShock
-/// </summary>
-[CommandContextType(InteractionContextType.Guild, InteractionContextType.BotDm, InteractionContextType.PrivateChannel)]
-public class SetupCommand : InteractionModuleBase
+public sealed partial class SetupCommands
 {
     private const string SetupModalId = "setup_menu";
     
-    private readonly OpenShockDiscordContext _db;
-    private readonly ILogger<SetupCommand> _logger;
-
-    /// <summary>
-    /// Default constructor for the SetupCommand
-    /// </summary>
-    /// <param name="db"></param>
-    public SetupCommand(OpenShockDiscordContext db, ILogger<SetupCommand> logger)
-    {
-        _db = db;
-        _logger = logger;
-    }
-    
-    [SlashCommand("setup", "Start setup for use with OpenShock")]
+    [SlashCommand("connection", "Start setup for use with OpenShock")]
     public async Task ExecuteSetupCommand()
     {
         var user = await _db.Users.FirstOrDefaultAsync(x => x.DiscordId == Context.User.Id);
@@ -51,7 +34,7 @@ public class SetupCommand : InteractionModuleBase
     }
     
     // Responds to the modal.
-    [ModalInteraction(SetupModalId)]
+    [ModalInteraction(SetupModalId, ignoreGroupNames: true)]
     public async Task ModalResponce(SetupModal modal)
     {
         await DeferAsync(ephemeral: Context.Interaction.ContextType != InteractionContextType.BotDm);
