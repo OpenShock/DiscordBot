@@ -1,5 +1,5 @@
-name: containerize
-description: Builds and pushes the frontend Docker image
+name: container-build
+description: Builds and pushes a Docker image
 inputs:
   registry:
     required: true
