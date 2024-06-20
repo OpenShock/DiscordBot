@@ -108,7 +108,7 @@ public class OpenShockDiscordBot
         await client.SetActivityAsync(
             new Game($"electricity flow, v{Assembly.GetEntryAssembly()?.GetName().Version?.ToString()}",
                 ActivityType.Watching));
-
+        
         await interactionService.RegisterCommandsGloballyAsync();
     }
 }

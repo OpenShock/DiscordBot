@@ -114,19 +114,19 @@ public sealed class ControlCommands : InteractionModuleBase
 
         var controlResponse = await control;
         await controlResponse.Match<Task>(
-            success => FollowupAsync("Shocking :zap: " + user.Mention + $" at {intensity}% for {inSeconds}s",
+            success => FollowupAsync($"Shocking :zap: {user.Mention} at {intensity}% for {inSeconds}s",
                 allowedMentions: AllowedMentions.All),
             notFound => Task.WhenAll(FollowupAsync("The user's shocker was not found."),
-                user.SendMessageAsync("You were shocked by " + Context.User.Mention +
-                                      $" but shocker with id `{notFound.Value}` was not found. Try running the `/setup shockers` command again.")),
+                user.SendMessageAsync(
+                    $"You were shocked by {Context.User.Mention} but shocker with id `{notFound.Value}` was not found. Try running the `/setup shockers` command again.")),
             paused => FollowupAsync(
                 $"The user's shocker is paused. Ask them to unpause it if you want to use it. ||Shocker ID: `{paused.Value}`||"),
             noPermission => FollowupAsync(
                 $"Server indicated no permissions for the shocker, this is likely a bug and should not happen. Feel free to contact support. ||Shocker ID: `{noPermission.Value}`||"),
             unauthenticated => Task.WhenAll(FollowupAsync(
                     $"The OpenShock Server Connection is not authenticated. Please wait for {user.Mention} to run the `/setup connection` command to re authenticate."),
-                user.SendMessageAsync("You were shocked by " + Context.User.Mention +
-                                      " but the OpenShock Server Connection is not authenticated. Please run the `/setup connection` command to re authenticate.")));
+                user.SendMessageAsync(
+                    $"You were shocked by {Context.User.Mention} but the OpenShock Server Connection is not authenticated. Please run the `/setup connection` command to re authenticate.")));
     }
 
     public enum ShockMode

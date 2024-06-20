@@ -13,6 +13,7 @@ namespace OpenShock.DiscordBot.Commands.Setup;
 
 [CommandContextType(InteractionContextType.Guild,
     InteractionContextType.BotDm, InteractionContextType.PrivateChannel)]
+[IntegrationType(ApplicationIntegrationType.UserInstall, ApplicationIntegrationType.GuildInstall)]
 [Group("setup", "Setup commands for OpenShock Connection and more")]
 public sealed partial class SetupCommands : InteractionModuleBase<SocketInteractionContext>
 {
