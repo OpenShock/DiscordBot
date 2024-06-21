@@ -8,4 +8,6 @@
 
 This bot can be added to any server. It will allow shocking via discord. WIP.
 
+[![Add To My Server](https://img.shields.io/badge/Add_to_Discord-e14a6d?style=for-the-badge&logo=discord)](https://discord.com/oauth2/authorize?client_id=1096380937496969326)
+
 </div></center>
