@@ -14,46 +14,23 @@ public partial class OpenShockDiscordContext : DbContext
         : base(options)
     {
     }
-
-    public virtual DbSet<GuildActiveShocker> GuildActiveShockers { get; set; }
-
+    
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UsersFriendwhitelist> UsersFriendwhitelists { get; set; }
 
     public virtual DbSet<UsersShocker> UsersShockers { get; set; }
     
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseNpgsql("Host=docker-node;Port=1337;Database=discord-bot;Username=root;Password=root");
+        }
+    }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<GuildActiveShocker>(entity =>
-        {
-            entity.HasKey(e => new { e.GuildId, e.DiscordId, e.ShockerId }).HasName("guild_active_shockers_pkey");
-
-            entity.ToTable("guild_active_shockers");
-
-            entity.Property(e => e.GuildId).HasColumnName("guild_id");
-            entity.Property(e => e.DiscordId).HasColumnName("discord_id");
-            entity.Property(e => e.ShockerId).HasColumnName("shocker_id");
-            entity.Property(e => e.LimitDuration).HasColumnName("limit_duration");
-            entity.Property(e => e.LimitIntensity).HasColumnName("limit_intensity");
-            entity.Property(e => e.Paused)
-                .HasDefaultValue(false)
-                .HasColumnName("paused");
-            entity.Property(e => e.PermShock)
-                .HasDefaultValue(true)
-                .HasColumnName("perm_shock");
-            entity.Property(e => e.PermSound)
-                .HasDefaultValue(true)
-                .HasColumnName("perm_sound");
-            entity.Property(e => e.PermVibrate)
-                .HasDefaultValue(true)
-                .HasColumnName("perm_vibrate");
-
-            entity.HasOne(d => d.Discord).WithMany(p => p.GuildActiveShockers)
-                .HasForeignKey(d => d.DiscordId)
-                .HasConstraintName("discord_id");
-        });
-
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.DiscordId).HasName("users_pkey");

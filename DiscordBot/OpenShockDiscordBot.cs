@@ -55,7 +55,17 @@ public class OpenShockDiscordBot
 
             services.AddSingleton(discordBotConfig);
 
-            services.AddDbContextPool<OpenShockDiscordContext>(x => { x.UseNpgsql(discordBotConfig.Db); });
+            services.AddDbContextPool<OpenShockDiscordContext>(x =>
+            {
+                x.UseNpgsql(discordBotConfig.Db.Conn);
+                
+                // ReSharper disable once InvertIf
+                if (discordBotConfig.Db.Debug)
+                {
+                    x.EnableDetailedErrors();
+                    x.EnableSensitiveDataLogging();
+                }
+            });
 
             services.AddSingleton<IUserRepository, UserRepository>();
             
@@ -74,6 +84,27 @@ public class OpenShockDiscordBot
             Logger.LogInformation("Starting OpenShock Discord Bot version {Version}",
                 Assembly.GetEntryAssembly()?.GetName().Version?.ToString());
 
+            var config = host.Services.GetRequiredService<DiscordBotConfig>();
+            
+            // <---- DATABASE MIGRATION ---->
+            
+            if (!config.Db.SkipMigration)
+            {
+                Logger.LogInformation("Running database migrations...");
+                using var scope = host.Services.CreateScope();
+                var openShockContext = scope.ServiceProvider.GetRequiredService<OpenShockDiscordContext>();
+                var pendingMigrations = (await openShockContext.Database.GetPendingMigrationsAsync()).ToList();
+
+                if (pendingMigrations.Count > 0)
+                {
+                    Logger.LogInformation("Found pending migrations, applying [{@Migrations}]", pendingMigrations);
+                    await openShockContext.Database.MigrateAsync();
+                    Logger.LogInformation("Applied database migrations... proceeding with startup");
+                }
+                else Logger.LogInformation("No pending migrations found, proceeding with startup");
+            }
+            else Logger.LogWarning("Skipping possible database migrations...");
+            
             // <---- Initialize Service stuff, this also instantiates the singletons!!! ---->
 
             var client = host.Services.GetRequiredService<DiscordSocketClient>();
@@ -88,8 +119,6 @@ public class OpenShockDiscordBot
             await interactionHandler.InitializeAsync();
 
             // <---- Run discord client ---->
-
-            var config = host.Services.GetRequiredService<DiscordBotConfig>();
 
             await client.LoginAsync(TokenType.Bot, config.Token);
             await client.StartAsync();
