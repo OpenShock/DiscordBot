@@ -5,7 +5,7 @@ namespace OpenShock.DiscordBot.OpenShockDiscordDb;
 
 public partial class User
 {
-    public decimal DiscordId { get; set; }
+    public ulong DiscordId { get; set; }
 
     public Guid OpenshockId { get; set; }
 
