@@ -126,6 +126,6 @@ public sealed class SetupModal : IModal
     
     [InputLabel("OpenShock API server")]
     [RequiredInput]
-    [ModalTextInput("api_server", TextInputStyle.Short, "https://api.openshock.app", maxLength: 256, initValue: "https://api.openshock.org")]
+    [ModalTextInput("api_server", TextInputStyle.Short, "https://api.openshock.app", maxLength: 256, initValue: "https://api.openshock.app")]
     public required string ApiServer { get; init; }
 }
