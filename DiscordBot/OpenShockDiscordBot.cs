@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using OpenShock.DiscordBot.MessageHandler;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
 using OpenShock.DiscordBot.Services;
 using OpenShock.DiscordBot.Services.UserRepository;
@@ -115,7 +116,7 @@ public class OpenShockDiscordBot
             client.Log += LoggingUtils.LogAsync;
             client.Ready += () => ReadyAsync(client, interactionService);
 
-            client.MessageReceived += HandleMessageAsync;
+            client.MessageReceived += MessageHandler.MessageHandler.HandleMessageAsync;
 
             interactionService.Log += LoggingUtils.LogAsync;
 
@@ -142,17 +143,5 @@ public class OpenShockDiscordBot
                 ActivityType.Watching));
         
         await interactionService.RegisterCommandsGloballyAsync();
-    }
-
-    private static ProfanityFilter.ProfanityFilter ProfanityFilter { get; } = new();
-    private static async Task HandleMessageAsync(SocketMessage message)
-    {
-        if (message.Author.IsBot) return;
-
-        // Check if the message contains a swear word
-        if (ProfanityFilter.ContainsProfanity(message.Content))
-        {
-            await message.AddReactionAsync(new Emoji("😠"));
-        }
     }
 }
