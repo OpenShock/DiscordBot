@@ -12,36 +12,26 @@ public sealed class MessageHandler
         "arduino",
         "penis",
         "pussy",
+        "damnit",
         "cocksucker",
-        "dick"
+        "retard",
+        "dick",
+        "bitch",
+        "bastard",
+        "cunt",
+        "slut",
+        "shit"
     ];
 
     private static readonly HashSet<string> _standaloneProfanities =
     [
-        "shit",
-        "fuck",
         "ass",
-        "pishock",
-        "arduino",
-        "penis",
-        "bitch",
-        "bastard",
         "cock",
+        "damn",
         "crap",
-        "cunt",
-        "damn",
-        "dick",
-        "pussy",
-        "slut",
-        "damn",
-        "damnit",
-        "cocksucker",
-        "curwa",
-        "dong",
-        "jævla",
-        "jävla",
-        "kug",
-        "kuk"
+        "piss",
+        "anal",
+        "cum"
     ];
 
     private static bool ContainsProfanities(string str)
