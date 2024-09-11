@@ -71,7 +71,11 @@ public class OpenShockDiscordBot
 
             services.AddSingleton<IUserRepository, UserRepository>();
             
-            services.AddSingleton(new DiscordSocketClient());
+            services.AddSingleton<DiscordSocketClient>(new DiscordSocketClient(new DiscordSocketConfig
+            {
+                GatewayIntents = GatewayIntents.AllUnprivileged |
+                                 GatewayIntents.MessageContent
+            }));
             services.AddSingleton<InteractionService>(x =>
                 new InteractionService(x.GetRequiredService<DiscordSocketClient>()));
             services.AddSingleton<InteractionHandler>();
