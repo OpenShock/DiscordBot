@@ -1,5 +1,4 @@
-﻿using Discord;
-using Discord.WebSocket;
+﻿using Discord.WebSocket;
 
 namespace OpenShock.DiscordBot.MessageHandler;
 
@@ -21,6 +20,7 @@ public sealed class MessageHandler
         {"slut", 1f },
         { "shit", 1f },
     };
+    private static readonly HashSet<string> _containedProfanitiesSet = new(_containedProfanities.Keys);
 
     private static readonly Dictionary<string, float> _standaloneProfanities = new() {
         {"ass", 1f },
@@ -31,19 +31,35 @@ public sealed class MessageHandler
         {"anal", 1f },
         { "cum", 1f },
     };
+    private static readonly HashSet<string> _standaloneProfanitiesSet = new(_standaloneProfanities.Keys);
 
-    private static bool ContainsProfanities(string str)
+    private static bool TryGetProfanityWeight(string str, out float weight)
     {
-        if (_containedProfanities.Keys.Any(str.Contains))
+        weight = 0;
+
+        if (string.IsNullOrEmpty(str)) return false;
+
+        // Whole string contains word check
+        foreach (var profanity in _containedProfanities)
         {
-            return true;
+            if (str.AsSpan().Contains(profanity.Key, StringComparison.OrdinalIgnoreCase))
+            {
+                weight = profanity.Value;
+                return true;
+            }
         }
 
-        var lcWordsSet = str.ToLower().Split([' ', '\t', '\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+        str = str.ToLower();
 
-        if (lcWordsSet.Any(_standaloneProfanities.ContainsKey))
+        // Words of string matches words check
+        var words = str.Split([' ', '\t', '\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (var word in words)
         {
-            return true;
+            if (_standaloneProfanities.TryGetValue(word, out weight))
+            {
+                return true;
+            }
         }
 
         return false;
@@ -53,10 +69,14 @@ public sealed class MessageHandler
     {
         if (message.Author.IsBot || string.IsNullOrEmpty(message.Content)) return;
 
+        // If the channel name does not contain "bot", ignore the message
+        if (!message.Channel.Name.Contains("bot", StringComparison.OrdinalIgnoreCase)) return;
+
         // Check if the message contains a swear word
-        if (ContainsProfanities(message.Content))
+        if (TryGetProfanityWeight(message.Content, out float weight))
         {
-            await message.AddReactionAsync(new Emoji("😠"));
+            // Respond to the message
+            await message.Channel.SendMessageAsync($"Profanity detected! Weight: {weight}");
         }
     }
 }
