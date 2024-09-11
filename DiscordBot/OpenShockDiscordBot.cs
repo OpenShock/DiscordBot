@@ -32,6 +32,7 @@ public class OpenShockDiscordBot
             .ConfigureAppConfiguration((context, config) =>
             {
                 config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+                    .AddJsonFile("appsettings.Custom.json", optional: true, reloadOnChange: false)
                     .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true,
                         reloadOnChange: false);
 
