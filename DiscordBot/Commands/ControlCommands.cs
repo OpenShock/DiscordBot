@@ -29,6 +29,18 @@ public sealed class ControlCommands : InteractionModuleBase
     public async Task ShockCommand(SocketUser user, [Range(1, 100)] byte intensity = 50,
         [Range(0.3, 30)] float duration = 5, ShockMode mode = ShockMode.Random)
     {
+        if(intensity is < 1 or > 100)
+        {
+            await FollowupAsync("Intensity must be at least 1% and at most 100%");
+            return;
+        }
+        
+        if(duration is < 0.3f or > 30f)
+        {
+            await FollowupAsync("Duration must be at least 0.3s and at most 30s");
+            return;
+        }
+        
         await DeferAsync();
         User shockUser;
         if (Context.User.Id == user.Id)
