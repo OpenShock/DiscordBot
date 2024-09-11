@@ -5,31 +5,31 @@ namespace OpenShock.DiscordBot.MessageHandler;
 public sealed class MessageHandler
 {
     private static readonly Dictionary<string, float> _containedProfanities = new() {
-        {"fuck", 1f },
-        {"pishock", 1f },
-        {"arduino", 1f },
-        {"penis", 1f },
-        {"pussy", 1f },
-        {"damnit", 1f },
-        {"cocksucker", 1f },
-        {"retard", 1f },
-        {"dick", 1f },
-        {"bitch", 1f },
-        {"bastard", 1f },
-        {"cunt", 1f },
-        {"slut", 1f },
-        { "shit", 1f },
+        { "arduino",    0.2f },
+        { "bastard",    0.4f },
+        { "bitch",      0.5f },
+        { "cocksucker", 0.9f },
+        { "cunt",       0.5f },
+        { "damnit",     0.3f },
+        { "dick",       0.6f },
+        { "penis",      0.5f },
+        { "pishock",    0.2f },
+        { "pussy",      0.5f },
+        { "retard",     1.0f },
+        { "shit",       0.3f },
+        { "slut",       0.6f },
+        { "fuck",       0.3f },
     };
     private static readonly HashSet<string> _containedProfanitiesSet = new(_containedProfanities.Keys);
 
     private static readonly Dictionary<string, float> _standaloneProfanities = new() {
-        {"ass", 1f },
-        {"cock", 1f },
-        {"damn", 1f },
-        {"crap", 1f },
-        {"piss", 1f },
-        {"anal", 1f },
-        { "cum", 1f },
+        { "anal", 0.6f },
+        { "cock", 0.5f },
+        { "crap", 0.3f },
+        { "cum",  0.4f },
+        { "damn", 0.3f },
+        { "piss", 0.3f },
+        { "ass",  0.2f },
     };
     private static readonly HashSet<string> _standaloneProfanitiesSet = new(_standaloneProfanities.Keys);
 
