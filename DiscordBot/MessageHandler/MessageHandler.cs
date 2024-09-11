@@ -23,13 +23,14 @@ public sealed class MessageHandler
     private static readonly HashSet<string> _containedProfanitiesSet = new(_containedProfanities.Keys);
 
     private static readonly Dictionary<string, float> _standaloneProfanities = new() {
-        { "anal", 0.6f },
-        { "cock", 0.5f },
-        { "crap", 0.3f },
-        { "cum",  0.4f },
-        { "damn", 0.3f },
-        { "piss", 0.3f },
-        { "ass",  0.2f },
+        { "anal",        0.6f },
+        { "cock",        0.5f },
+        { "crap",        0.3f },
+        { "cum",         0.4f },
+        { "damn",        0.3f },
+        { "micropython", 0.5f },
+        { "piss",        0.3f },
+        { "ass",         0.2f },
     };
     private static readonly HashSet<string> _standaloneProfanitiesSet = new(_standaloneProfanities.Keys);
 
