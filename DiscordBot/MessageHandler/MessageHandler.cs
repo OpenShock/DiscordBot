@@ -5,20 +5,20 @@ namespace OpenShock.DiscordBot.MessageHandler;
 public sealed class MessageHandler
 {
     private static readonly Dictionary<string, float> _containedProfanities = new() {
-        { "arduino",    0.2f },
-        { "bastard",    0.4f },
-        { "bitch",      0.5f },
-        { "cocksucker", 0.9f },
-        { "cunt",       0.5f },
-        { "damnit",     0.3f },
-        { "dick",       0.6f },
-        { "penis",      0.5f },
-        { "pishock",    0.2f },
-        { "pussy",      0.5f },
-        { "retard",     1.0f },
-        { "shit",       0.3f },
-        { "slut",       0.6f },
-        { "fuck",       0.3f },
+        { "arduino",  0.2f },
+        { "bastard",  0.4f },
+        { "bitch",    0.5f },
+        { "cocksuck", 0.9f },
+        { "cunt",     0.5f },
+        { "damnit",   0.3f },
+        { "dick",     0.6f },
+        { "penis",    0.5f },
+        { "pishock",  0.2f },
+        { "pussy",    0.5f },
+        { "retard",   1.0f },
+        { "shit",     0.3f },
+        { "slut",     0.6f },
+        { "fuck",     0.3f },
     };
 
     private static readonly Dictionary<string, float> _standaloneProfanities = new() {
