@@ -32,9 +32,63 @@ public sealed class MessageHandler
         { "ass",         0.2f },
     };
 
-    private readonly record struct WordRange(int Start, int Length);
-
     private static float CalculateWeight(float accumulated, float weight) => accumulated == 0 ? weight : MathF.Max(accumulated, weight) + 0.1f;
+
+    private static void GetContainedWordsCountAndWeight(ReadOnlySpan<char> lowerCaseSpan, ref int count, ref float weight)
+    {
+        foreach (var item in _containedProfanities)
+        {
+            while (true)
+            {
+                int index = lowerCaseSpan.IndexOf(item.Key, StringComparison.OrdinalIgnoreCase);
+                if (index < 0) break;
+
+                lowerCaseSpan = lowerCaseSpan[(index + item.Key.Length)..];
+
+                count++;
+                weight = CalculateWeight(weight, item.Value);
+            }
+        }
+    }
+
+    private readonly record struct WordRange(int Start, int End);
+    private static List<WordRange> GetWordRanges(ReadOnlySpan<char> span)
+    {
+        List<WordRange> wordRanges = [];
+
+        int rangeStart = 0;
+        for (int i = 0; i < span.Length; i++)
+        {
+            if (span[i] is not (' ' or '\t' or '\r' or '\n')) continue;
+
+            if (rangeStart < i)
+            {
+                wordRanges.Add(new WordRange(rangeStart, i));
+            }
+
+            rangeStart = i + 1;
+        }
+
+        return wordRanges;
+    }
+
+    private static void GetStandaloneWordsCountAndWeight(ReadOnlySpan<char> lowerCaseSpan, ref int count, ref float weight)
+    {
+        List<WordRange> wordRanges = GetWordRanges(lowerCaseSpan);
+
+        // Check if any of the words are standalone matches
+        foreach (var item in _standaloneProfanities)
+        {
+            foreach (var wordRange in wordRanges)
+            {
+                if (lowerCaseSpan[wordRange.Start..wordRange.End].Equals(item.Key, StringComparison.OrdinalIgnoreCase))
+                {
+                    count++;
+                    weight = CalculateWeight(weight, item.Value);
+                }
+            }
+        }
+    }
 
     private static bool TryGetProfanityWeight(string str, out int count, out float weight)
     {
@@ -43,58 +97,11 @@ public sealed class MessageHandler
 
         if (string.IsNullOrEmpty(str)) return false;
 
+        str = str.ToLowerInvariant();
         ReadOnlySpan<char> strSpan = str.AsSpan();
 
-        // Look trough string for all contained matches
-        foreach (var item in _containedProfanities)
-        {
-            ReadOnlySpan<char> badWord = item.Key.AsSpan();
-            float badWordWeight = item.Value;
-
-            int start = 0;
-            while (true) {
-                int index = strSpan[start..].IndexOf(badWord, StringComparison.OrdinalIgnoreCase);
-                if (index < 0) break;
-
-                start += index + badWord.Length;
-
-                count++;
-                weight = CalculateWeight(weight, badWordWeight);
-            }
-        }
-
-        // Collect all word ranges
-        int rangeStart = 0;
-        List<WordRange> wordRanges = [];
-        for (int i = 0; i < strSpan.Length; i++)
-        {
-            char c = strSpan[i];
-
-            if (c is not (' ' or '\t' or '\r' or '\n')) continue;
-
-            if (rangeStart < i)
-            {
-                wordRanges.Add(new WordRange(rangeStart, i - rangeStart));
-            }
-
-            rangeStart = i + 1;
-        }
-
-        // Check if any of the words are standalone matches
-        foreach (var item in _standaloneProfanities)
-        {
-            ReadOnlySpan<char> badWord = item.Key.AsSpan();
-            float badWordWeight = item.Value;
-
-            foreach (var wordRange in wordRanges)
-            {
-                if (strSpan.Slice(wordRange.Start, wordRange.Length).Equals(badWord, StringComparison.OrdinalIgnoreCase))
-                {
-                    count++;
-                    weight = CalculateWeight(weight, badWordWeight);
-                }
-            }
-        }
+        GetContainedWordsCountAndWeight(strSpan, ref count, ref weight);
+        GetStandaloneWordsCountAndWeight(strSpan, ref count, ref weight);
 
         // Roof the weight to 1.0
         weight = MathF.Min(weight, 1.0f);
@@ -113,7 +120,7 @@ public sealed class MessageHandler
         if (TryGetProfanityWeight(message.Content, out int count, out float weight))
         {
             // Respond to the message
-            await message.Channel.SendMessageAsync($"Profanity detected! {count} bad {(count > 1 ? "words" : "word")} with total weight: {weight}");
+            await message.Channel.SendMessageAsync($"Profanity detected! {count} bad {(count > 1 ? "words" : "word")}, shocking at {weight * 100f}%");
         }
     }
 }
