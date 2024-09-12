@@ -20,7 +20,6 @@ public sealed class MessageHandler
         { "slut",       0.6f },
         { "fuck",       0.3f },
     };
-    private static readonly HashSet<string> _containedProfanitiesSet = new(_containedProfanities.Keys);
 
     private static readonly Dictionary<string, float> _standaloneProfanities = new() {
         { "anal",        0.6f },
@@ -32,38 +31,62 @@ public sealed class MessageHandler
         { "piss",        0.3f },
         { "ass",         0.2f },
     };
-    private static readonly HashSet<string> _standaloneProfanitiesSet = new(_standaloneProfanities.Keys);
 
-    private static bool TryGetProfanityWeight(string str, out float weight)
+    private readonly record struct WordRange(int Start, int Length);
+
+    private static bool TryGetProfanityWeight(string str, out int count, out float weight)
     {
+        count = 0;
         weight = 0;
 
         if (string.IsNullOrEmpty(str)) return false;
 
-        // Whole string contains word check
-        foreach (var profanity in _containedProfanities)
+        ReadOnlySpan<char> strSpan = str.AsSpan();
+
+        // Look trough string for all contained matches
+        foreach (var kvp in _containedProfanities)
         {
-            if (str.AsSpan().Contains(profanity.Key, StringComparison.OrdinalIgnoreCase))
+            if (strSpan.Contains(kvp.Key.AsSpan(), StringComparison.OrdinalIgnoreCase))
             {
-                weight = profanity.Value;
-                return true;
+                count++;
+                weight = weight == 0f ? kvp.Value : MathF.Max(weight, kvp.Value) + 0.1f;
             }
         }
 
-        str = str.ToLower();
-
-        // Words of string matches words check
-        var words = str.Split([' ', '\t', '\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
-
-        foreach (var word in words)
+        // Collect all word ranges
+        int rangeStart = 0;
+        List<WordRange> wordRanges = [];
+        for (int i = 0; i < strSpan.Length; i++)
         {
-            if (_standaloneProfanities.TryGetValue(word, out weight))
+            char c = strSpan[i];
+
+            if (c is not (' ' or '\t' or '\r' or '\n')) continue;
+
+            if (rangeStart < i)
             {
-                return true;
+                wordRanges.Add(new WordRange(rangeStart, i - rangeStart));
+            }
+
+            rangeStart = i + 1;
+        }
+
+        // Check if any of the words are standalone matches
+        foreach (var item in _standaloneProfanities)
+        {
+            foreach (var wordRange in wordRanges)
+            {
+                if (strSpan.Slice(wordRange.Start, wordRange.Length).Equals(item.Key.AsSpan(), StringComparison.OrdinalIgnoreCase))
+                {
+                    count++;
+                    weight = weight == 0f ? item.Value : MathF.Max(weight, item.Value) + 0.1f;
+                }
             }
         }
 
-        return false;
+        // Roof the weight to 1.0
+        weight = MathF.Min(weight, 1.0f);
+
+        return count > 0;
     }
 
     public static async Task HandleMessageAsync(SocketMessage message)
@@ -74,10 +97,10 @@ public sealed class MessageHandler
         if (!message.Channel.Name.Contains("bot", StringComparison.OrdinalIgnoreCase)) return;
 
         // Check if the message contains a swear word
-        if (TryGetProfanityWeight(message.Content, out float weight))
+        if (TryGetProfanityWeight(message.Content, out int count, out float weight))
         {
             // Respond to the message
-            await message.Channel.SendMessageAsync($"Profanity detected! Weight: {weight}");
+            await message.Channel.SendMessageAsync($"Profanity detected! {count} bad {(count > 1 ? "words" : "word")} with total weight: {weight}");
         }
     }
 }
