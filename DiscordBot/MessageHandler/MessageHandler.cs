@@ -38,12 +38,13 @@ public sealed class MessageHandler
     {
         foreach (var item in _containedProfanities)
         {
+            ReadOnlySpan<char> remaining = lowerCaseSpan;
             while (true)
             {
-                int index = lowerCaseSpan.IndexOf(item.Key, StringComparison.OrdinalIgnoreCase);
+                int index = remaining.IndexOf(item.Key, StringComparison.OrdinalIgnoreCase);
                 if (index < 0) break;
 
-                lowerCaseSpan = lowerCaseSpan[(index + item.Key.Length)..];
+                remaining = remaining[(index + item.Key.Length)..];
 
                 count++;
                 weight = CalculateWeight(weight, item.Value);
