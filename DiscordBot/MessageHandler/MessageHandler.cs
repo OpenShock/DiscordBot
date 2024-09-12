@@ -56,7 +56,7 @@ public sealed class MessageHandler
                 int index = strSpan[start..].IndexOf(badWord, StringComparison.OrdinalIgnoreCase);
                 if (index < 0) break;
 
-                start = index + badWord.Length;
+                start += index + badWord.Length;
 
                 count++;
                 weight = CalculateWeight(weight, badWordWeight);
