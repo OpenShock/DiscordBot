@@ -1,4 +1,5 @@
 ﻿using Discord.WebSocket;
+using System.Buffers;
 
 namespace OpenShock.DiscordBot.MessageHandler;
 
@@ -54,26 +55,42 @@ public sealed class MessageHandler
     }
 
     private readonly record struct WordRange(int Start, int End);
+    private static readonly SearchValues<char> _whiteSpaceSearchValues = SearchValues.Create([' ', '\t', '\r', '\n']);
     private static List<WordRange> GetWordRanges(ReadOnlySpan<char> span)
     {
         List<WordRange> wordRanges = [];
 
-        int rangeStart = 0;
-        for (int i = 0; i < span.Length; i++)
+        int spanIndex = 0;
+        while (true)
         {
-            if (span[i] is not (' ' or '\t' or '\r' or '\n')) continue;
-
-            if (rangeStart < i)
+            // Find the next white space character
+            int index = span.IndexOfAny(_whiteSpaceSearchValues);
+            if (index < 0)
             {
-                wordRanges.Add(new WordRange(rangeStart, i));
+                // Add the remaining word range if the word is not empty
+                if (span.Length > 0)
+                {
+                    wordRanges.Add(new WordRange(spanIndex, spanIndex + span.Length));
+                }
+
+                // Exit the loop, span is fully processed
+                break;
             }
 
-            rangeStart = i + 1;
-        }
+            // Skip the white space character if it is the first character in the span
+            if (index == 0)
+            {
+                spanIndex++;
+                span = span[1..];
+                continue;
+            }
 
-        if (rangeStart < span.Length)
-        {
-            wordRanges.Add(new WordRange(rangeStart, span.Length));
+            // Add the word range if the word is not empty
+            wordRanges.Add(new WordRange(spanIndex, spanIndex + index));
+
+            // Move the span index to after the white space character
+            spanIndex += index + 1;
+            span = span[(index + 1)..];
         }
 
         return wordRanges;
