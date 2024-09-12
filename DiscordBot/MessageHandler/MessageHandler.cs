@@ -34,6 +34,8 @@ public sealed class MessageHandler
 
     private readonly record struct WordRange(int Start, int Length);
 
+    private static float CalculateWeight(float accumulated, float weight) => accumulated == 0 ? weight : MathF.Max(accumulated, weight) + 0.1f;
+
     private static bool TryGetProfanityWeight(string str, out int count, out float weight)
     {
         count = 0;
@@ -44,12 +46,20 @@ public sealed class MessageHandler
         ReadOnlySpan<char> strSpan = str.AsSpan();
 
         // Look trough string for all contained matches
-        foreach (var kvp in _containedProfanities)
+        foreach (var item in _containedProfanities)
         {
-            if (strSpan.Contains(kvp.Key.AsSpan(), StringComparison.OrdinalIgnoreCase))
-            {
+            ReadOnlySpan<char> badWord = item.Key.AsSpan();
+            float badWordWeight = item.Value;
+
+            int start = 0;
+            while (true) {
+                int index = strSpan[start..].IndexOf(badWord, StringComparison.OrdinalIgnoreCase);
+                if (index < 0) break;
+
+                start = index + badWord.Length;
+
                 count++;
-                weight = weight == 0f ? kvp.Value : MathF.Max(weight, kvp.Value) + 0.1f;
+                weight = CalculateWeight(weight, badWordWeight);
             }
         }
 
@@ -73,12 +83,15 @@ public sealed class MessageHandler
         // Check if any of the words are standalone matches
         foreach (var item in _standaloneProfanities)
         {
+            ReadOnlySpan<char> badWord = item.Key.AsSpan();
+            float badWordWeight = item.Value;
+
             foreach (var wordRange in wordRanges)
             {
-                if (strSpan.Slice(wordRange.Start, wordRange.Length).Equals(item.Key.AsSpan(), StringComparison.OrdinalIgnoreCase))
+                if (strSpan.Slice(wordRange.Start, wordRange.Length).Equals(badWord, StringComparison.OrdinalIgnoreCase))
                 {
                     count++;
-                    weight = weight == 0f ? item.Value : MathF.Max(weight, item.Value) + 0.1f;
+                    weight = CalculateWeight(weight, badWordWeight);
                 }
             }
         }
