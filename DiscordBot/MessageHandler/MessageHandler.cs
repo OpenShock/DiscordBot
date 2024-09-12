@@ -19,6 +19,7 @@ public sealed class MessageHandler
         { "shit",     0.3f },
         { "slut",     0.6f },
         { "fuck",     0.3f },
+        { "i use arch b", 0.9f }
     };
 
     private static readonly Dictionary<string, float> _standaloneProfanities = new() {
