@@ -69,6 +69,11 @@ public sealed class MessageHandler
             rangeStart = i + 1;
         }
 
+        if (rangeStart < span.Length)
+        {
+            wordRanges.Add(new WordRange(rangeStart, span.Length));
+        }
+
         return wordRanges;
     }
 
