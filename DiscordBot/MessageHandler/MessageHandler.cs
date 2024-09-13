@@ -44,19 +44,23 @@ public sealed partial class MessageHandler
         // Check if the message contains a swear word
         if (ProfanityDetector.TryGetProfanityWeight(message.Content, out int count, out float weight))
         {
-            var intensity = (byte)(weight * 100f);
+            float intensityPercent = weight * 100f;
+
+            List<Task> tasks = [];
 
             // If the channel is a bot channel, respond with debug message
             if (BotChannelMatchingRegex().IsMatch(message.Channel.Name))
             {
-                await message.Channel.SendMessageAsync($"Profanity detected! {count} bad {(count > 1 ? "words" : "word")}, shocking at {intensity}%");
+                tasks.Add(message.Channel.SendMessageAsync($"Profanity detected! {count} bad {(count > 1 ? "words" : "word")}, shocking at {intensityPercent}%"));
             }
 
             // Trigger the shock
-            await SendShock(message.Author.Id, intensityPercent);
+            tasks.Add(SendShock(message.Author.Id, intensityPercent));
 
             // Add shock emoji on complete
-            await message.AddReactionAsync(new Emoji("⚡"));
+            tasks.Add(message.AddReactionAsync(new Emoji("⚡")));
+
+            await Task.WhenAll(tasks);
         }
     }
 }
