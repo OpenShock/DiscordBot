@@ -22,19 +22,18 @@ public sealed partial class MessageHandler
     [GeneratedRegex("\bbot\b", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
     private partial Regex BotChannelMatchingRegex();
 
-    private async Task SendShock(ulong discordId, float intensityPercent)
+    private static async Task<bool> CheckUserProfanityShockingOptIn(AsyncServiceScope scope, ulong userDiscordId)
     {
-        var intensity = (byte)intensityPercent;
-
-        await using var scope = _serviceProvider.CreateAsyncScope();
-        
         var db = scope.ServiceProvider.GetRequiredService<OpenShockDiscordContext>();
-        var user = await db.Users.FirstOrDefaultAsync(x => x.DiscordId == discordId);
-        if (user == null) return;
-        if (!user.ProfanityShocking) return;
+        var user = await db.Users.FirstOrDefaultAsync(x => x.DiscordId == userDiscordId);
 
+        return user?.ProfanityShocking ?? false;
+    }
+
+    private static async Task ShockUserAsync(AsyncServiceScope scope, ulong userDiscordId, float intensityPercent)
+    {
         var backendService = scope.ServiceProvider.GetRequiredService<IOpenShockBackendService>();
-        await backendService.ControlAllShockers(discordId, intensity, 1000, ControlType.Shock);
+        await backendService.ControlAllShockers(userDiscordId, (byte)intensityPercent, 1000, ControlType.Shock);
     }
 
     public async Task HandleMessageAsync(SocketMessage message)
@@ -46,21 +45,27 @@ public sealed partial class MessageHandler
         {
             float intensityPercent = weight * 100f;
 
-            List<Task> tasks = [];
-
             // If the channel is a bot channel, respond with debug message
             if (BotChannelMatchingRegex().IsMatch(message.Channel.Name))
             {
-                tasks.Add(message.Channel.SendMessageAsync($"Profanity detected! {count} bad {(count > 1 ? "words" : "word")}, shocking at {intensityPercent}%"));
+                await message.Channel.SendMessageAsync($"Profanity detected! {count} bad {(count > 1 ? "words" : "word")}, shocking at {intensityPercent}%");
             }
 
-            // Trigger the shock
-            tasks.Add(SendShock(message.Author.Id, intensityPercent));
+            var authorDiscordId = message.Author.Id;
 
-            // Add shock emoji on complete
-            tasks.Add(message.AddReactionAsync(new Emoji("⚡")));
+            await using var scope = _serviceProvider.CreateAsyncScope();
 
-            await Task.WhenAll(tasks);
+            // Verify user has opted in for profanity shocking
+            if (!await CheckUserProfanityShockingOptIn(scope, authorDiscordId))
+            {
+                return;
+            }
+
+            // Send reaction and trigger shock
+            await Task.WhenAll([
+                    message.AddReactionAsync(new Emoji("⚡")),
+                    ShockUserAsync(scope, authorDiscordId, intensityPercent)
+                ]);
         }
     }
 }
