@@ -22,6 +22,7 @@ public sealed partial class SetupCommands
         user.ProfanityShocking = enabled;
         await _db.SaveChangesAsync();
         
-        await FollowupAsync("Profanity shocking is now " + (enabled ? "enabled" : "disabled"), ephemeral: Context.IsNotDm());
+        await FollowupAsync(
+            $"Profanity shocking is now {(enabled ? "enabled" : "disabled")} :face_with_symbols_over_mouth:", ephemeral: Context.IsNotDm());
     }
 }
