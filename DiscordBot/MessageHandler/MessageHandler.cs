@@ -45,7 +45,7 @@ public sealed partial class MessageHandler
             // If the channel is a bot channel, respond with debug message
             if (message.Channel.Id == 1114123393567047730)
             {
-                await message.Channel.SendMessageAsync($"Profanity detected! {count} bad {(count > 1 ? "words" : "word")}, shocking at {intensityPercent}%");
+                await message.Channel.SendMessageAsync($"Profanity detected! {count} bad {(count > 1 ? "words" : "word")}, shocking at {intensityPercent:F0}%");
             }
 
             var authorDiscordId = message.Author.Id;
