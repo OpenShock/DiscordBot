@@ -27,10 +27,11 @@ public static class ProfanityDetector
         { "cock",        0.5f },
         { "crap",        0.3f },
         { "cum",         0.4f },
-        { "damn",        0.3f },
+        { "damn",        0.15f },
         { "micropython", 0.5f },
         { "piss",        0.3f },
         { "ass",         0.2f },
+        { "wtf",         0.15f },
     };
 
     private static float CalculateWeight(float accumulated, float weight) => accumulated == 0 ? weight : MathF.Max(accumulated, weight) + 0.1f;
@@ -54,7 +55,7 @@ public static class ProfanityDetector
     }
 
     private readonly record struct WordRange(int Start, int End);
-    private static readonly SearchValues<char> _whiteSpaceSearchValues = SearchValues.Create([' ', '\t', '\r', '\n']);
+    private static readonly SearchValues<char> _seperationValues = SearchValues.Create([' ', '\t', '\r', '\n', '?', '!', ',', '.']);
     private static List<WordRange> GetWordRanges(ReadOnlySpan<char> span)
     {
         List<WordRange> wordRanges = [];
@@ -63,7 +64,7 @@ public static class ProfanityDetector
         while (true)
         {
             // Find the next white space character
-            int index = span.IndexOfAny(_whiteSpaceSearchValues);
+            int index = span.IndexOfAny(_seperationValues);
             if (index < 0)
             {
                 // Add the remaining word range if the word is not empty
