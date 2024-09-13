@@ -22,6 +22,21 @@ public sealed partial class MessageHandler
     [GeneratedRegex("\bbot\b", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
     private partial Regex BotChannelMatchingRegex();
 
+    private async Task SendShock(ulong discordId, float intensityPercent)
+    {
+        var intensity = (byte)intensityPercent;
+
+        await using var scope = _serviceProvider.CreateAsyncScope();
+        
+        var db = scope.ServiceProvider.GetRequiredService<OpenShockDiscordContext>();
+        var user = await db.Users.FirstOrDefaultAsync(x => x.DiscordId == discordId);
+        if (user == null) return;
+        if (!user.ProfanityShocking) return;
+
+        var backendService = scope.ServiceProvider.GetRequiredService<IOpenShockBackendService>();
+        await backendService.ControlAllShockers(discordId, intensity, 1000, ControlType.Shock);
+    }
+
     public async Task HandleMessageAsync(SocketMessage message)
     {
         if (message.Author.IsBot || string.IsNullOrEmpty(message.Content)) return;
@@ -38,16 +53,7 @@ public sealed partial class MessageHandler
             }
 
             // Trigger the shock
-            await using (var scope = _serviceProvider.CreateAsyncScope())
-            {
-                var db = scope.ServiceProvider.GetRequiredService<OpenShockDiscordContext>();
-                var user = await db.Users.FirstOrDefaultAsync(x => x.DiscordId == message.Author.Id);
-                if (user == null) return;
-                if (!user.ProfanityShocking) return;
-
-                var backendService = scope.ServiceProvider.GetRequiredService<IOpenShockBackendService>();
-                await backendService.ControlAllShockers(message.Id, intensity, 1000, ControlType.Shock);
-            }
+            await SendShock(message.Author.Id, intensityPercent);
 
             // Add shock emoji on complete
             await message.AddReactionAsync(new Emoji("⚡"));
