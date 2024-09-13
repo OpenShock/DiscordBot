@@ -31,17 +31,6 @@ public sealed partial class MessageHandler
         {
             var intensity = (byte)(weight * 100f);
 
-            // Add profanity reaction emoji
-            await message.AddReactionAsync(weight switch
-            {
-                > 0.1f and <= 0.3f => new Emoji("😕"),
-                > 0.3f and <= 0.5f => new Emoji("🙁"),
-                > 0.5f and <= 0.7f => new Emoji("😠"),
-                > 0.7f and <= 0.9f => new Emoji("😡"),
-                > 0.9f => new Emoji("🤬"),
-                _ => new Emoji("😐")
-            });
-
             // If the channel is a bot channel, respond with debug message
             if (BotChannelMatchingRegex().Match(message.Channel.Name).Success)
             {
