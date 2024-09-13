@@ -19,6 +19,8 @@ public static class ProfanityDetector
         { "shit",     0.3f },
         { "slut",     0.6f },
         { "fuck",     0.3f },
+        { "wtf",      0.15f },
+        { "omfg",     0.15f },
         { "i use arch b", 0.9f }
     };
 
@@ -31,7 +33,6 @@ public static class ProfanityDetector
         { "micropython", 0.5f },
         { "piss",        0.3f },
         { "ass",         0.2f },
-        { "wtf",         0.15f },
     };
 
     private static float CalculateWeight(float accumulated, float weight) => accumulated == 0 ? weight : MathF.Max(accumulated, weight) + 0.1f;
@@ -55,7 +56,7 @@ public static class ProfanityDetector
     }
 
     private readonly record struct WordRange(int Start, int End);
-    private static readonly SearchValues<char> _seperationValues = SearchValues.Create([' ', '\t', '\r', '\n', '?', '!', ',', '.', '(', ')']);
+    private static readonly SearchValues<char> _seperationValues = SearchValues.Create([' ', '\t', '\r', '\n', '?', '!', ',', '.', '(', ')', '"']);
     private static List<WordRange> GetWordRanges(ReadOnlySpan<char> span)
     {
         List<WordRange> wordRanges = [];
