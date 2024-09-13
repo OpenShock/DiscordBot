@@ -47,7 +47,7 @@ public sealed partial class MessageHandler
             var intensity = (byte)(weight * 100f);
 
             // If the channel is a bot channel, respond with debug message
-            if (BotChannelMatchingRegex().Match(message.Channel.Name).Success)
+            if (BotChannelMatchingRegex().IsMatch(message.Channel.Name))
             {
                 await message.Channel.SendMessageAsync($"Profanity detected! {count} bad {(count > 1 ? "words" : "word")}, shocking at {intensity}%");
             }
