@@ -55,7 +55,7 @@ public static class ProfanityDetector
     }
 
     private readonly record struct WordRange(int Start, int End);
-    private static readonly SearchValues<char> _seperationValues = SearchValues.Create([' ', '\t', '\r', '\n', '?', '!', ',', '.']);
+    private static readonly SearchValues<char> _seperationValues = SearchValues.Create([' ', '\t', '\r', '\n', '?', '!', ',', '.', '(', ')']);
     private static List<WordRange> GetWordRanges(ReadOnlySpan<char> span)
     {
         List<WordRange> wordRanges = [];
