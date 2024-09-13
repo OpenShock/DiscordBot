@@ -1,14 +1,15 @@
-﻿using Discord.WebSocket;
+﻿using Discord;
+using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
 using OpenShock.DiscordBot.Services;
-using OpenShock.DiscordBot.Utils;
 using OpenShock.SDK.CSharp.Models;
+using System.Text.RegularExpressions;
 
 namespace OpenShock.DiscordBot.MessageHandler;
 
-public sealed class MessageHandler
+public sealed partial class MessageHandler
 {
     private readonly IServiceProvider _serviceProvider;
 
@@ -17,30 +18,50 @@ public sealed class MessageHandler
     {
         _serviceProvider = serviceProvider;
     }
-    
+
+    [GeneratedRegex("\bbot\b", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
+    private partial Regex BotChannelMatchingRegex();
+
     public async Task HandleMessageAsync(SocketMessage message)
     {
         if (message.Author.IsBot || string.IsNullOrEmpty(message.Content)) return;
 
-        // If the channel name does not contain "bot", ignore the message
-        if (!message.Channel.Name.Contains("bot", StringComparison.OrdinalIgnoreCase)) return;
-
         // Check if the message contains a swear word
         if (ProfanityDetector.TryGetProfanityWeight(message.Content, out int count, out float weight))
         {
-            var intensity = (byte) (weight * 100f);
-            
-            // Respond to the message
-            await message.Channel.SendMessageAsync($"Profanity detected! {count} bad {(count > 1 ? "words" : "word")}, shocking at {intensity}%");
-            
-            await using var scope = _serviceProvider.CreateAsyncScope();
-            var db = scope.ServiceProvider.GetRequiredService<OpenShockDiscordContext>();
-            var user = await db.Users.FirstOrDefaultAsync(x => x.DiscordId == message.Author.Id);
-            if (user == null) return;
-            if(!user.ProfanityShocking) return;
-            
-            var backendService = scope.ServiceProvider.GetRequiredService<IOpenShockBackendService>();
-            await backendService.ControlAllShockers(message.Id, intensity, 1000, ControlType.Shock);
+            var intensity = (byte)(weight * 100f);
+
+            // Add profanity reaction emoji
+            await message.AddReactionAsync(weight switch
+            {
+                > 0.1f and <= 0.3f => new Emoji("😕"),
+                > 0.3f and <= 0.5f => new Emoji("🙁"),
+                > 0.5f and <= 0.7f => new Emoji("😠"),
+                > 0.7f and <= 0.9f => new Emoji("😡"),
+                > 0.9f => new Emoji("🤬"),
+                _ => new Emoji("😐")
+            });
+
+            // If the channel is a bot channel, respond with debug message
+            if (BotChannelMatchingRegex().Match(message.Channel.Name).Success)
+            {
+                await message.Channel.SendMessageAsync($"Profanity detected! {count} bad {(count > 1 ? "words" : "word")}, shocking at {intensity}%");
+            }
+
+            // Trigger the shock
+            await using (var scope = _serviceProvider.CreateAsyncScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<OpenShockDiscordContext>();
+                var user = await db.Users.FirstOrDefaultAsync(x => x.DiscordId == message.Author.Id);
+                if (user == null) return;
+                if (!user.ProfanityShocking) return;
+
+                var backendService = scope.ServiceProvider.GetRequiredService<IOpenShockBackendService>();
+                await backendService.ControlAllShockers(message.Id, intensity, 1000, ControlType.Shock);
+            }
+
+            // Add shock emoji on complete
+            await message.AddReactionAsync(new Emoji("⚡"));
         }
     }
 }
