@@ -70,6 +70,8 @@ public class OpenShockDiscordBot
             });
 
             services.AddSingleton<IUserRepository, UserRepository>();
+            services.AddSingleton<IOpenShockBackendService, OpenShockBackendService>();
+            services.AddSingleton<MessageHandler.MessageHandler>();
             
             services.AddSingleton<DiscordSocketClient>(new DiscordSocketClient(new DiscordSocketConfig
             {
@@ -116,11 +118,12 @@ public class OpenShockDiscordBot
             var client = host.Services.GetRequiredService<DiscordSocketClient>();
             var interactionService = host.Services.GetRequiredService<InteractionService>();
             var interactionHandler = host.Services.GetRequiredService<InteractionHandler>();
+            var messageHandler = host.Services.GetRequiredService<MessageHandler.MessageHandler>();
 
             client.Log += LoggingUtils.LogAsync;
             client.Ready += () => ReadyAsync(client, interactionService);
 
-            //client.MessageReceived += MessageHandler.MessageHandler.HandleMessageAsync;
+            client.MessageReceived += messageHandler.HandleMessageAsync;
 
             interactionService.Log += LoggingUtils.LogAsync;
 
