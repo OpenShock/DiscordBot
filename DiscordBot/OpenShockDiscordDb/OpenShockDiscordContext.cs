@@ -51,6 +51,9 @@ public partial class OpenShockDiscordContext : DbContext
             entity.Property(e => e.CreatedOn)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("created_on");
+            entity.Property(e => e.ProfanityShocking)
+                .HasDefaultValueSql("false")
+                .HasColumnName("profanity_shocking");
             entity.Property(e => e.OpenshockId).HasColumnName("openshock_id");
         });
 

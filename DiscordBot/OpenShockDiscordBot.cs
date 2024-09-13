@@ -54,7 +54,7 @@ public class OpenShockDiscordBot
         {
             var discordBotConfig = context.Configuration.GetSection("bot").Get<DiscordBotConfig>() ??
                                    throw new Exception("Could not load bot config");
-
+            
             services.AddSingleton(discordBotConfig);
 
             services.AddDbContextPool<OpenShockDiscordContext>(x =>
@@ -89,7 +89,7 @@ public class OpenShockDiscordBot
             Logger = host.Services.GetRequiredService<ILogger<OpenShockDiscordBot>>();
             Logger.LogInformation("Starting OpenShock Discord Bot version {Version}",
                 Assembly.GetEntryAssembly()?.GetName().Version?.ToString());
-
+            
             var config = host.Services.GetRequiredService<DiscordBotConfig>();
             
             // <---- DATABASE MIGRATION ---->
@@ -120,7 +120,7 @@ public class OpenShockDiscordBot
             client.Log += LoggingUtils.LogAsync;
             client.Ready += () => ReadyAsync(client, interactionService);
 
-            client.MessageReceived += MessageHandler.MessageHandler.HandleMessageAsync;
+            //client.MessageReceived += MessageHandler.MessageHandler.HandleMessageAsync;
 
             interactionService.Log += LoggingUtils.LogAsync;
 

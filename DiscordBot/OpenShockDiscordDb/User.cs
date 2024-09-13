@@ -14,6 +14,8 @@ public partial class User
     public string ApiServer { get; set; } = null!;
 
     public string ApiKey { get; set; } = null!;
+    
+    public bool ProfanityShocking { get; set; }
 
     public virtual ICollection<UsersFriendwhitelist> UsersFriendwhitelists { get; set; } = new List<UsersFriendwhitelist>();
 
