@@ -19,9 +19,6 @@ public sealed partial class MessageHandler
         _serviceProvider = serviceProvider;
     }
 
-    [GeneratedRegex("\bbot\b", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
-    private partial Regex BotChannelMatchingRegex();
-
     private static async Task<bool> CheckUserProfanityShockingOptIn(AsyncServiceScope scope, ulong userDiscordId)
     {
         var db = scope.ServiceProvider.GetRequiredService<OpenShockDiscordContext>();
@@ -46,7 +43,7 @@ public sealed partial class MessageHandler
             float intensityPercent = weight * 100f;
 
             // If the channel is a bot channel, respond with debug message
-            if (BotChannelMatchingRegex().IsMatch(message.Channel.Name))
+            if (message.Channel.Id == 1114123393567047730)
             {
                 await message.Channel.SendMessageAsync($"Profanity detected! {count} bad {(count > 1 ? "words" : "word")}, shocking at {intensityPercent}%");
             }
