@@ -80,7 +80,7 @@ public sealed partial class SetupCommands : InteractionModuleBase<SocketInteract
                 foreach (var shocker in chunk)
                 {
                     var button = new ButtonBuilder(shocker.Name,
-                        $"button_setup_shocker@{Context.User.Id}_{shocker.Id}_{page}");
+                        $"button_setup_shocker_button@{Context.User.Id}_{shocker.Id}_{page}");
                     button.Style = activeShockers.Any(x => x.ShockerId == shocker.Id)
                         ? ButtonStyle.Success
                         : ButtonStyle.Danger;
@@ -100,7 +100,7 @@ public sealed partial class SetupCommands : InteractionModuleBase<SocketInteract
         return ($"Device `{device.Name}` ({page + 1}/{ownShockers.Count})", buttonsPage.Build());
     }
 
-    [ComponentInteraction("button_setup_shocker@*.", ignoreGroupNames: true, TreatAsRegex = true)]
+    [ComponentInteraction("button_setup_shocker_button@*.", ignoreGroupNames: true, TreatAsRegex = true)]
     public async Task ShockerButtonInteraction()
     {
         await DeferAsync(ephemeral: Context.IsNotDm());
