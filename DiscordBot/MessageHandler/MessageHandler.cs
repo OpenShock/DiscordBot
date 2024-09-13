@@ -144,7 +144,7 @@ public sealed class MessageHandler
         if (TryGetProfanityWeight(message.Content, out int count, out float weight))
         {
             // Respond to the message
-            await message.Channel.SendMessageAsync($"Profanity detected! {count} bad {(count > 1 ? "words" : "word")}, shocking at {weight * 100f}%");
+            await message.Channel.SendMessageAsync($"Profanity detected! {count} bad {(count > 1 ? "words" : "word")}, shocking at {weight * 100f:F0}%");
         }
     }
 }
