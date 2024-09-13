@@ -37,16 +37,12 @@ public sealed partial class MessageHandler
     {
         if (message.Author.IsBot || string.IsNullOrEmpty(message.Content)) return;
 
+        bool isInBotChannel = message.Channel.Id == 1114123393567047730;
+
         // Check if the message contains a swear word
         if (ProfanityDetector.TryGetProfanityWeight(message.Content, out int count, out float weight))
         {
             float intensityPercent = weight * 100f;
-
-            // If the channel is a bot channel, respond with debug message
-            if (message.Channel.Id == 1114123393567047730)
-            {
-                await message.Channel.SendMessageAsync($"Profanity detected! {count} bad {(count > 1 ? "words" : "word")}, shocking at {intensityPercent:F0}%");
-            }
 
             var authorDiscordId = message.Author.Id;
 
@@ -55,8 +51,13 @@ public sealed partial class MessageHandler
             // Verify user has opted in for profanity shocking
             if (!await CheckUserProfanityShockingOptIn(scope, authorDiscordId))
             {
+                // If the channel is a bot channel, respond with debug message
+                if (isInBotChannel) await message.Channel.SendMessageAsync("Profanity detected, but cant shock you, register and/or enable it");
                 return;
             }
+            
+            // If the channel is a bot channel, respond with debug message
+            if (isInBotChannel) await message.Channel.SendMessageAsync($"Profanity detected! {count} bad {(count > 1 ? "words" : "word")}, shocking at {intensityPercent:F0}%");
 
             // Send reaction and trigger shock
             await Task.WhenAll([
