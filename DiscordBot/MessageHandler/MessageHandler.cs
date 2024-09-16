@@ -39,6 +39,10 @@ public sealed partial class MessageHandler
 
         bool isInBotChannel = message.Channel.Id == 1114123393567047730;
 
+        if (isInBotChannel && message.Content.StartsWith("debug")) {
+            await message.Channel.SendMessageAsync($"Message received: ``{message.Content}``");
+        }
+
         // Check if message starts with the lightning bolt emoji and mentions a user
         if (message.Content.StartsWith(":zap:") && message.MentionedUsers.Count > 0)
         {
