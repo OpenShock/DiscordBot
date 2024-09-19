@@ -57,6 +57,10 @@ public sealed partial class SetupCommands : InteractionModuleBase<SocketInteract
         var ownShockers = shockersAction.AsT0.Value;
         var activeShockers = await _db.UsersShockers.Where(x => x.User == Context.User.Id).ToListAsync();
 
+        // cleanup old shockers
+        var oldShockers = activeShockers.Where(x => ownShockers.All(y => y.Id != x.ShockerId)).Select(x => x.ShockerId);
+        await _db.UsersShockers.Where(x => oldShockers.Contains(x.ShockerId)).ExecuteDeleteAsync();
+        
         var message = await Page(0, ownShockers, activeShockers);
         await FollowupAsync(message.Item1, components: message.Item2);
     }
