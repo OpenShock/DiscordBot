@@ -100,7 +100,7 @@ public sealed class ControlCommands : InteractionModuleBase
                         Id = randomShocker.ShockerId,
                         Duration = durationMs,
                         Intensity = intensity,
-                        Type = ControlType.Vibrate
+                        Type = ControlType.Shock
                     }
                 ]
             });
