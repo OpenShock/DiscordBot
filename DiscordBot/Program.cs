@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using OpenShock.DiscordBot;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
 using OpenShock.DiscordBot.Services;
@@ -38,7 +37,7 @@ builder.UseContentRoot(Directory.GetCurrentDirectory())
         options.ValidateScopes = isDevelopment;
         options.ValidateOnBuild = isDevelopment;
     })
-    .UseSerilog((context, _, config) => { config.ReadFrom.Configuration(context.Configuration); });
+    .UseSerilog((context, _, config) => config.ReadFrom.Configuration(context.Configuration));
 
 // <---- Services ---->
 
@@ -80,8 +79,8 @@ builder.ConfigureServices((context, services) =>
 try
 {
     var host = builder.Build();
-    var logger = host.Services.GetRequiredService<ILogger<Program>>();
-    logger.LogInformation("Starting OpenShock Discord Bot version {Version}", Assembly.GetEntryAssembly()?.GetName().Version?.ToString());
+
+    Log.Information("Starting OpenShock Discord Bot version {Version}", Assembly.GetEntryAssembly()?.GetName().Version?.ToString());
 
     var config = host.Services.GetRequiredService<DiscordBotConfig>();
 
@@ -89,20 +88,27 @@ try
 
     if (!config.Db.SkipMigration)
     {
-        logger.LogInformation("Running database migrations...");
+        Log.Information("Running database migrations...");
+
         using var scope = host.Services.CreateScope();
         var openShockContext = scope.ServiceProvider.GetRequiredService<OpenShockDiscordContext>();
         var pendingMigrations = (await openShockContext.Database.GetPendingMigrationsAsync()).ToList();
 
         if (pendingMigrations.Count > 0)
         {
-            logger.LogInformation("Found pending migrations, applying [{@Migrations}]", pendingMigrations);
+            Log.Information("Found pending migrations, applying [{@Migrations}]", pendingMigrations);
             await openShockContext.Database.MigrateAsync();
-            logger.LogInformation("Applied database migrations... proceeding with startup");
+            Log.Information("Applied database migrations... proceeding with startup");
         }
-        else logger.LogInformation("No pending migrations found, proceeding with startup");
+        else
+        {
+            Log.Information("No pending migrations found, proceeding with startup");
+        }
     }
-    else logger.LogWarning("Skipping possible database migrations...");
+    else
+    {
+        Log.Warning("Skipping possible database migrations...");
+    }
 
     // <---- Initialize Service stuff, this also instantiates the singletons!!! ---->
 
@@ -127,9 +133,13 @@ try
 
     await host.RunAsync();
 }
-catch (Exception e)
+catch (Exception ex)
 {
-    Console.WriteLine(e);
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
 }
 
 static async Task ReadyAsync(BaseSocketClient client, InteractionService interactionService)
