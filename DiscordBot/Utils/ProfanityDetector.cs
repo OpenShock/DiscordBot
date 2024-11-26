@@ -1,6 +1,6 @@
 ﻿using System.Buffers;
 
-namespace OpenShock.DiscordBot.MessageHandler;
+namespace OpenShock.DiscordBot.Utils;
 
 public static class ProfanityDetector
 {

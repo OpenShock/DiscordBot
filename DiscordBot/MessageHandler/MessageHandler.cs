@@ -4,10 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
 using OpenShock.DiscordBot.Services;
+using OpenShock.DiscordBot.Utils;
 using OpenShock.SDK.CSharp.Models;
-using System.Text.RegularExpressions;
 
-namespace OpenShock.DiscordBot.MessageHandler;
+namespace OpenShock.DiscordBot;
 
 public sealed partial class MessageHandler
 {
@@ -39,7 +39,8 @@ public sealed partial class MessageHandler
 
         bool isInBotChannel = message.Channel.Id == 1114123393567047730;
 
-        if (isInBotChannel && message.Content.StartsWith("debug ")) {
+        if (isInBotChannel && message.Content.StartsWith("debug "))
+        {
             await message.Channel.SendMessageAsync($"Message received: ``{message.Content[6..]}``");
         }
 
@@ -67,7 +68,7 @@ public sealed partial class MessageHandler
                 if (isInBotChannel) await message.Channel.SendMessageAsync("Profanity detected, but cant shock you, register and/or enable it");
                 return;
             }
-            
+
             // If the channel is a bot channel, respond with debug message
             if (isInBotChannel) await message.Channel.SendMessageAsync($"Profanity detected! {count} bad {(count > 1 ? "words" : "word")}, shocking at {intensityPercent:F0}%");
 
