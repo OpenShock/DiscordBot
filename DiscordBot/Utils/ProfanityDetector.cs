@@ -55,11 +55,10 @@ public static class ProfanityDetector
         }
     }
 
-    private readonly record struct WordRange(int Start, int End);
     private static readonly SearchValues<char> _seperationValues = SearchValues.Create([' ', '\t', '\r', '\n', '?', '!', ',', '.', '(', ')', '"']);
-    private static List<WordRange> GetWordRanges(ReadOnlySpan<char> span)
+    private static List<Range> GetWordRanges(ReadOnlySpan<char> span)
     {
-        List<WordRange> wordRanges = [];
+        List<Range> wordRanges = [];
 
         int spanIndex = 0;
         while (true)
@@ -71,7 +70,7 @@ public static class ProfanityDetector
                 // Add the remaining word range if the word is not empty
                 if (span.Length > 0)
                 {
-                    wordRanges.Add(new WordRange(spanIndex, spanIndex + span.Length));
+                    wordRanges.Add(new Range(spanIndex, spanIndex + span.Length));
                 }
 
                 // Exit the loop, span is fully processed
@@ -87,7 +86,7 @@ public static class ProfanityDetector
             }
 
             // Add the word range if the word is not empty
-            wordRanges.Add(new WordRange(spanIndex, spanIndex + index));
+            wordRanges.Add(new Range(spanIndex, spanIndex + index));
 
             // Move the span index to after the white space character
             spanIndex += index + 1;
@@ -99,7 +98,7 @@ public static class ProfanityDetector
 
     private static void GetStandaloneWordsCountAndWeight(ReadOnlySpan<char> lowerCaseSpan, ref int count, ref float weight)
     {
-        List<WordRange> wordRanges = GetWordRanges(lowerCaseSpan);
+        List<Range> wordRanges = GetWordRanges(lowerCaseSpan);
 
         // Check if any of the words are standalone matches
         foreach (var item in _standaloneProfanities)
