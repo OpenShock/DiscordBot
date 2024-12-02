@@ -13,7 +13,7 @@
         <AssemblyName>OpenShock.DiscordBot</AssemblyName>
         <RootNamespace>OpenShock.DiscordBot</RootNamespace>
         <InvariantGlobalization>false</InvariantGlobalization>
-        <LangVersion>12</LangVersion>
+        <LangVersion>13</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
