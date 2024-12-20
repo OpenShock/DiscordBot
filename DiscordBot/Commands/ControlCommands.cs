@@ -34,13 +34,13 @@ public sealed class ControlCommands : InteractionModuleBase
             await FollowupAsync("Intensity must be at least 1% and at most 100%");
             return;
         }
-        
+
         if(duration is < 0.3f or > 30f)
         {
             await FollowupAsync("Duration must be at least 0.3s and at most 30s");
             return;
         }
-        
+
         await DeferAsync();
         User shockUser;
         if (Context.User.Id == user.Id)
@@ -92,7 +92,7 @@ public sealed class ControlCommands : InteractionModuleBase
             // Shock the user
             control = client.ControlShocker(new ControlRequest
             {
-                CustomName = $"{Context.User.GlobalName} [Discord]",
+                CustomName = $"{Context.User.GlobalName ?? Context.User.Username} [Discord]",
                 Shocks =
                 [
                     new Control
@@ -117,7 +117,7 @@ public sealed class ControlCommands : InteractionModuleBase
 
             control = client.ControlShocker(new ControlRequest
             {
-                CustomName = $"{Context.User.GlobalName} [Discord]",
+                CustomName = $"{Context.User.GlobalName ?? Context.User.Username} [Discord]",
                 Shocks = shocks
             });
         }
