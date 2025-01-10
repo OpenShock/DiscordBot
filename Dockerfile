@@ -11,6 +11,9 @@ RUN dotnet publish -c Release -o /publish --no-restore
 
 FROM mcr.microsoft.com/dotnet/runtime:9.0-alpine
 WORKDIR /app
+
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
 COPY --from=build /publish .
 RUN apk add --no-cache icu-libs
 
