@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
@@ -14,7 +14,8 @@
         <RootNamespace>OpenShock.DiscordBot</RootNamespace>
         <InvariantGlobalization>false</InvariantGlobalization>
         <LangVersion>13</LangVersion>
-    </PropertyGroup>
+      <UserSecretsId>05918ba7-2547-4661-9c92-1172d1441505</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Discord.Addons.Hosting" Version="6.1.0" />

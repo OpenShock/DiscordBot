@@ -54,18 +54,19 @@ public sealed partial class SetupCommands : InteractionModuleBase<SocketInteract
             return;
         }
 
-        var ownShockers = shockersAction.AsT0.Value;
+        var ownDevices = shockersAction.AsT0.Value;
         var activeShockers = await _db.UsersShockers.Where(x => x.User == Context.User.Id).ToListAsync();
-
-        // cleanup old shockers
-        var oldShockers = activeShockers.Where(x => ownShockers.All(y => y.Id != x.ShockerId)).Select(x => x.ShockerId);
-        await _db.UsersShockers.Where(x => oldShockers.Contains(x.ShockerId)).ExecuteDeleteAsync();
+        var ownShockers = ownDevices.SelectMany(x => x.Shockers); 
         
-        var message = await Page(0, ownShockers, activeShockers);
+        // cleanup old shockers
+        var oldShockers = activeShockers.Where(x => ownShockers.All(y => y.Id != x.ShockerId)).Select(x => x.ShockerId).ToArray();
+        if(oldShockers.Length > 0) await _db.UsersShockers.Where(x => oldShockers.Contains(x.ShockerId)).ExecuteDeleteAsync();
+        
+        var message = Page(0, ownDevices, activeShockers);
         await FollowupAsync(message.Item1, components: message.Item2);
     }
 
-    private async Task<(string, MessageComponent)> Page(int page, IReadOnlyCollection<ResponseDeviceWithShockers> ownShockers,
+    private (string, MessageComponent) Page(int page, IReadOnlyCollection<ResponseDeviceWithShockers> ownShockers,
         List<UsersShocker> activeShockers)
     {
         var device = ownShockers.ElementAtOrDefault(page);
@@ -147,7 +148,7 @@ public sealed partial class SetupCommands : InteractionModuleBase<SocketInteract
 
         var ownShockers = shockersAction.AsT0.Value;
 
-        var message = await Page(page, ownShockers, activeShockers);
+        var message = Page(page, ownShockers, activeShockers);
         
         await ModifyOriginalResponseAsync(properties =>
         {
@@ -184,7 +185,7 @@ public sealed partial class SetupCommands : InteractionModuleBase<SocketInteract
         
         var page = int.Parse(((string)CustomId.GetValue(Context.Interaction.Data)!).Split('@')[1]);
 
-        var message = await Page(page, ownShockers, activeShockers);
+        var message = Page(page, ownShockers, activeShockers);
         
         await ModifyOriginalResponseAsync(properties =>
         {

@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using System.Diagnostics;
+using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,8 @@ using OpenShock.DiscordBot.Utils;
 using Serilog;
 using System.Reflection;
 
+try
+{
 HostBuilder builder = new();
 
 builder.UseContentRoot(Directory.GetCurrentDirectory())
@@ -28,6 +31,7 @@ builder.UseContentRoot(Directory.GetCurrentDirectory())
             .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true,
                 reloadOnChange: false);
 
+        config.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: true);
         config.AddEnvironmentVariables();
         if (args is { Length: > 0 }) config.AddCommandLine(args);
     })
@@ -43,7 +47,8 @@ builder.UseContentRoot(Directory.GetCurrentDirectory())
 
 builder.ConfigureServices((context, services) =>
 {
-    var discordBotConfig = context.Configuration.GetSection("bot").Get<DiscordBotConfig>() ??
+    var botConfig = context.Configuration.GetSection("bot");
+    var discordBotConfig = botConfig.Get<DiscordBotConfig>() ??
                            throw new Exception("Could not load bot config");
 
     services.AddSingleton(discordBotConfig);
@@ -76,8 +81,7 @@ builder.ConfigureServices((context, services) =>
     services.AddHostedService<StatusTask>();
 });
 
-try
-{
+
     var host = builder.Build();
 
     Log.Information("Starting OpenShock Discord Bot version {Version}", Assembly.GetEntryAssembly()?.GetName().Version?.ToString());
@@ -135,7 +139,7 @@ try
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, "Application terminated unexpectedly");
+    Console.WriteLine(ex);
 }
 finally
 {
