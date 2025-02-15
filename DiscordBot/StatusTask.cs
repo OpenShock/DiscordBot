@@ -40,7 +40,7 @@ public class StatusTask : IHostedService, IDisposable
     private async Task Update()
     {
         var response =
-            await HttpClient.GetFromJsonAsync<BaseResponse<StatsResponse>>("https://api.shocklink.net/1/public/stats");
+            await HttpClient.GetFromJsonAsync<BaseResponse<StatsResponse>>("https://api.openshock.app/1/public/stats");
         if (response == null) return;
 
         await _client.SetActivityAsync(
