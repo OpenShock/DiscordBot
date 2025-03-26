@@ -17,6 +17,8 @@ public partial class OpenShockDiscordContext : DbContext
     
     public virtual DbSet<User> Users { get; set; }
 
+    public virtual DbSet<BotAdmin> Administrators { get; set; }
+
     public virtual DbSet<UsersFriendwhitelist> UsersFriendwhitelists { get; set; }
 
     public virtual DbSet<UsersShocker> UsersShockers { get; set; }
@@ -55,6 +57,20 @@ public partial class OpenShockDiscordContext : DbContext
                 .HasDefaultValueSql("false")
                 .HasColumnName("profanity_shocking");
             entity.Property(e => e.OpenshockId).HasColumnName("openshock_id");
+        });
+
+        modelBuilder.Entity<BotAdmin>(entity =>
+        {
+            entity.HasKey(e => e.DiscordId).HasName("administrators_pkey");
+
+            entity.ToTable("administrators");
+
+            entity.Property(e => e.DiscordId).HasColumnName("discord_id");
+            entity.Property(e => e.IsRemovable)
+                .HasColumnName("is_removable");
+            entity.Property(e => e.CreatedOn)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnName("created_on");
         });
 
         modelBuilder.Entity<UsersFriendwhitelist>(entity =>
