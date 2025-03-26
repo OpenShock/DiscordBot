@@ -1,4 +1,4 @@
-﻿namespace OpenShock.DiscordBot.Services;
+﻿namespace OpenShock.DiscordBot.Services.ProfanityDetector;
 
 public interface IProfanityDetector
 {
