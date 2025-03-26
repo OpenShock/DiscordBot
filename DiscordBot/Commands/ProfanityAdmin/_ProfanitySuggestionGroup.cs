@@ -1,17 +1,16 @@
-﻿using Discord.Interactions;
-using Discord;
+﻿using Discord;
+using Discord.Interactions;
 using Microsoft.Extensions.Logging;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
-using OpenShock.DiscordBot.Services;
 using OpenShock.DiscordBot.Services.ProfanityDetector;
 
-namespace OpenShock.DiscordBot.Commands.Profanity;
+namespace OpenShock.DiscordBot.Commands.ProfanityAdmin;
 
-public sealed partial class ProfanityGroup
+public sealed partial class ProfanityAdminGroup
 {
-    [CommandContextType(InteractionContextType.Guild, InteractionContextType.BotDm, InteractionContextType.PrivateChannel)]
-    [IntegrationType(ApplicationIntegrationType.UserInstall, ApplicationIntegrationType.GuildInstall)]
-    [Group("suggestion", "Suggest new profanities")]
+    [CommandContextType(InteractionContextType.Guild)]
+    [IntegrationType(ApplicationIntegrationType.GuildInstall)]
+    [Group("suggestion", "Suggestions")]
     public sealed partial class SuggestionGroup : InteractionModuleBase<SocketInteractionContext>
     {
         private readonly OpenShockDiscordContext _db;

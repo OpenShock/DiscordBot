@@ -1,11 +1,12 @@
-﻿using Discord.Interactions;
+﻿using System.Text;
+using Discord.Interactions;
 using Microsoft.EntityFrameworkCore;
+using OpenShock.DiscordBot.Commands.Profanity;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
-using System.Text;
 
-namespace OpenShock.DiscordBot.Commands.Profanity;
+namespace OpenShock.DiscordBot.Commands.ProfanityAdmin;
 
-public sealed partial class ProfanityGroup
+public sealed partial class ProfanityAdminGroup
 {
     [SlashCommand("add", "Add a profanity rule directly (admin only).")]
     public async Task ProfanityAddCommand(
@@ -19,7 +20,7 @@ public sealed partial class ProfanityGroup
     {
         await DeferAsync(ephemeral: true);
 
-        if (!_db.Administrators.Any(a => a.DiscordId == Context.User.Id))
+        if (!Queryable.Any<BotAdmin>(_db.Administrators, a => a.DiscordId == Context.User.Id))
         {
             await FollowupAsync("You are not an administrator.", ephemeral: true);
             return;
@@ -27,13 +28,13 @@ public sealed partial class ProfanityGroup
 
         trigger = trigger.Normalize(NormalizationForm.FormKC).Trim().ToLowerInvariant();
 
-        if (!RelevantCultures.TryGetValue(language.Trim().ToLower(), out var languageCode))
+        if (!ProfanityGroup.RelevantCultures.TryGetValue(language.Trim().ToLower(), out var languageCode))
         {
             await FollowupAsync($"❌ `{language}` is not a valid language.", ephemeral: true);
             return;
         }
 
-        if (await _db.ProfanityRules.AnyAsync(r => r.Trigger == trigger))
+        if (await EntityFrameworkQueryableExtensions.AnyAsync<ProfanityRule>(_db.ProfanityRules, r => r.Trigger == trigger))
         {
             await FollowupAsync($"⚠️ `{trigger}` already exists as a rule.", ephemeral: true);
             return;

@@ -1,9 +1,9 @@
 ﻿using Discord.Interactions;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
 
-namespace OpenShock.DiscordBot.Commands.Profanity;
+namespace OpenShock.DiscordBot.Commands.ProfanityAdmin;
 
-public sealed partial class ProfanityGroup
+public sealed partial class ProfanityAdminGroup
 {
     public sealed partial class SuggestionGroup
     {
@@ -12,7 +12,7 @@ public sealed partial class ProfanityGroup
         {
             await DeferAsync(ephemeral: true);
 
-            if (!_db.Administrators.Any(a => a.DiscordId == Context.User.Id))
+            if (!Queryable.Any<BotAdmin>(_db.Administrators, a => a.DiscordId == Context.User.Id))
             {
                 await FollowupAsync("You are not an administrator.", ephemeral: true);
                 return;

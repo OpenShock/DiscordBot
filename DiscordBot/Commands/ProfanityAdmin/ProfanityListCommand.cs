@@ -1,10 +1,11 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Microsoft.EntityFrameworkCore;
+using OpenShock.DiscordBot.OpenShockDiscordDb;
 
-namespace OpenShock.DiscordBot.Commands.Profanity;
+namespace OpenShock.DiscordBot.Commands.ProfanityAdmin;
 
-public sealed partial class ProfanityGroup
+public sealed partial class ProfanityAdminGroup
 {
     [SlashCommand("list", "List current profanity rules (admin only).")]
     public async Task ProfanityListCommand()

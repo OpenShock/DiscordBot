@@ -5,8 +5,8 @@ using OpenShock.DiscordBot.OpenShockDiscordDb;
 
 namespace OpenShock.DiscordBot.Commands.Admin;
 
-[CommandContextType(InteractionContextType.Guild, InteractionContextType.BotDm, InteractionContextType.PrivateChannel)]
-[IntegrationType(ApplicationIntegrationType.UserInstall, ApplicationIntegrationType.GuildInstall)]
+[CommandContextType(InteractionContextType.Guild)]
+[IntegrationType(ApplicationIntegrationType.GuildInstall)]
 [Group("admin", "Manage bot administrators")]
 public sealed partial class AdminGroup : InteractionModuleBase<SocketInteractionContext>
 {

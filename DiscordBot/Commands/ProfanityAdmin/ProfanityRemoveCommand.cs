@@ -1,17 +1,18 @@
-﻿using Discord.Interactions;
+﻿using System.Text;
+using Discord.Interactions;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
+using OpenShock.DiscordBot.OpenShockDiscordDb;
 
-namespace OpenShock.DiscordBot.Commands.Profanity;
+namespace OpenShock.DiscordBot.Commands.ProfanityAdmin;
 
-public sealed partial class ProfanityGroup
+public sealed partial class ProfanityAdminGroup
 {
     [SlashCommand("remove", "Remove an existing profanity rule (admin only).")]
     public async Task ProfanityRemoveCommand(string trigger)
     {
         await DeferAsync(ephemeral: true);
 
-        if (!_db.Administrators.Any(a => a.DiscordId == Context.User.Id))
+        if (!Queryable.Any<BotAdmin>(_db.Administrators, a => a.DiscordId == Context.User.Id))
         {
             await FollowupAsync("You are not an administrator.", ephemeral: true);
             return;
@@ -19,7 +20,7 @@ public sealed partial class ProfanityGroup
 
         trigger = trigger.Normalize(NormalizationForm.FormKC).Trim().ToLowerInvariant();
 
-        var rule = await _db.ProfanityRules.FirstOrDefaultAsync(r => r.Trigger == trigger);
+        var rule = await EntityFrameworkQueryableExtensions.FirstOrDefaultAsync<ProfanityRule>(_db.ProfanityRules, r => r.Trigger == trigger);
         if (rule == null)
         {
             await FollowupAsync($"❌ No rule found for `{trigger}`.", ephemeral: true);

@@ -1,11 +1,12 @@
-﻿using Discord;
+﻿using System.Globalization;
+using Discord;
 using Discord.Interactions;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
+using OpenShock.DiscordBot.OpenShockDiscordDb;
 
-namespace OpenShock.DiscordBot.Commands.Profanity;
+namespace OpenShock.DiscordBot.Commands.ProfanityAdmin;
 
-public sealed partial class ProfanityGroup
+public sealed partial class ProfanityAdminGroup
 {
     public sealed partial class SuggestionGroup
     {
@@ -14,14 +15,14 @@ public sealed partial class ProfanityGroup
         {
             await DeferAsync(ephemeral: true);
 
-            if (!_db.Administrators.Any(a => a.DiscordId == Context.User.Id))
+            if (!Queryable.Any<BotAdmin>(_db.Administrators, a => a.DiscordId == Context.User.Id))
             {
                 await FollowupAsync("You are not an administrator.", ephemeral: true);
                 return;
             }
 
-            var suggestions = await _db.ProfanitySuggestions
-                .OrderByDescending(s => s.SuggestedAt)
+            var suggestions = await Queryable
+                .OrderByDescending<ProfanitySuggestion, DateTimeOffset>(_db.ProfanitySuggestions, s => s.SuggestedAt)
                 .Take(10)
                 .ToListAsync();
 
