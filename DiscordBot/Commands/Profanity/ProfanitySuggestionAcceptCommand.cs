@@ -13,10 +13,12 @@ public sealed partial class ProfanityGroup
         [RequireUserPermission(GuildPermission.Administrator)]
         public async Task ProfanitySuggestionAcceptCommand(ulong id, float? severity, bool? matchwholeword, string? validationRegex, string? category, string? comment)
         {
+            await DeferAsync(ephemeral: true);
+
             var suggestion = await _db.ProfanitySuggestions.FindAsync(id);
             if (suggestion == null)
             {
-                await RespondAsync("❌ Suggestion not found or already reviewed.");
+                await RespondAsync("❌ Suggestion not found or already reviewed.", ephemeral: true);
                 return;
             }
 
@@ -37,7 +39,7 @@ public sealed partial class ProfanityGroup
             _db.ProfanityRules.Add(rule);
             await _db.SaveChangesAsync();
 
-            await RespondAsync($"✅ Suggestion accepted and rule created for `{rule.Trigger}`.");
+            await RespondAsync($"✅ Suggestion accepted and rule created for `{rule.Trigger}`.", ephemeral: true);
         }
     }
 }

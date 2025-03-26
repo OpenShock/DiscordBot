@@ -20,7 +20,7 @@ public sealed partial class ProfanityGroup
 
         if (rules.Count == 0)
         {
-            await FollowupAsync("📭 No active profanity rules found.");
+            await FollowupAsync("📭 No active profanity rules found.", ephemeral: true);
             return;
         }
 
@@ -39,6 +39,6 @@ public sealed partial class ProfanityGroup
             );
         }
 
-        await FollowupAsync(embed: embed.Build());
+        await FollowupAsync(embed: embed.Build(), ephemeral: true);
     }
 }

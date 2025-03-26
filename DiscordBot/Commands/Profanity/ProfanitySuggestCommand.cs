@@ -15,11 +15,13 @@ public sealed partial class ProfanityGroup
     [SlashCommand("suggest", "Suggest a new word or phrase to be detected as profanity.")]
     public async Task ProfanitySuggestCommand(string trigger, string comment, string language)
     {
-        await DeferAsync(ephemeral: Context.IsNotDm());
+        bool ephemeral = Context.IsNotDm();
+
+        await DeferAsync(ephemeral: ephemeral);
 
         if (string.IsNullOrWhiteSpace(trigger) || string.IsNullOrWhiteSpace(comment) || string.IsNullOrWhiteSpace(language))
         {
-            await RespondAsync("❌ All fields are required.");
+            await RespondAsync("❌ All fields are required.", ephemeral: ephemeral);
             return;
         }
 
@@ -28,21 +30,21 @@ public sealed partial class ProfanityGroup
 
         if (!RelevantCultures.TryGetValue(language.Trim().ToLower(), out var languageCode))
         {
-            await RespondAsync($"❌ {language} is not a valid language.");
+            await RespondAsync($"❌ {language} is not a valid language.", ephemeral: ephemeral);
             return;
         }
 
         var suggestion = await _db.ProfanitySuggestions.FirstOrDefaultAsync(r => r.Trigger == trigger);
         if (suggestion != null)
         {
-            await RespondAsync($"✅ {trigger} has already been suggested and is pending a review.");
+            await RespondAsync($"✅ {trigger} has already been suggested and is pending a review.", ephemeral: ephemeral);
             return;
         }
 
         var rejection = await _db.RejectedProfanitySuggestions.FirstOrDefaultAsync(r => r.Trigger == trigger);
         if (rejection != null)
         {
-            await RespondAsync($"❌ {trigger} has already been suggested and rejected as a triggerword, reason: {rejection.Reason}.");
+            await RespondAsync($"❌ {trigger} has already been suggested and rejected as a triggerword, reason: {rejection.Reason}.", ephemeral: ephemeral);
             return;
         }
 
@@ -58,6 +60,6 @@ public sealed partial class ProfanityGroup
         _db.ProfanitySuggestions.Add(suggestion);
         await _db.SaveChangesAsync();
 
-        await RespondAsync("✅ Your suggestion has been submitted for review. Thank you!");
+        await RespondAsync("✅ Your suggestion has been submitted for review. Thank you!", ephemeral: ephemeral);
     }
 }

@@ -17,7 +17,7 @@ public sealed partial class ProfanityGroup
             var suggestion = await _db.ProfanitySuggestions.FirstOrDefaultAsync(s => s.Id == id);
             if (suggestion == null)
             {
-                await RespondAsync("❌ Suggestion not found or already reviewed.");
+                await RespondAsync("❌ Suggestion not found or already reviewed.", ephemeral: true);
                 return;
             }
 
@@ -35,7 +35,7 @@ public sealed partial class ProfanityGroup
 
             await _db.SaveChangesAsync();
 
-            await RespondAsync($"🚫 Suggestion for `{suggestion.Trigger}` rejected.");
+            await RespondAsync($"🚫 Suggestion for `{suggestion.Trigger}` rejected.", ephemeral: true);
         }
     }
 }

@@ -23,7 +23,7 @@ public sealed partial class ProfanityGroup
 
             if (suggestions.Count == 0)
             {
-                await FollowupAsync("📭 No pending suggestions found.");
+                await FollowupAsync("📭 No pending suggestions found.", ephemeral: true);
                 return;
             }
 
@@ -42,7 +42,7 @@ public sealed partial class ProfanityGroup
                 );
             }
 
-            await FollowupAsync(embed: embed.Build());
+            await FollowupAsync(embed: embed.Build(), ephemeral: true);
         }
     }
 }

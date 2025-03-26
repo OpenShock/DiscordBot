@@ -26,13 +26,13 @@ public sealed partial class ProfanityGroup
 
         if (!RelevantCultures.TryGetValue(language.Trim().ToLower(), out var languageCode))
         {
-            await FollowupAsync($"❌ `{language}` is not a valid language.");
+            await FollowupAsync($"❌ `{language}` is not a valid language.", ephemeral: true);
             return;
         }
 
         if (await _db.ProfanityRules.AnyAsync(r => r.Trigger == trigger))
         {
-            await FollowupAsync($"⚠️ `{trigger}` already exists as a rule.");
+            await FollowupAsync($"⚠️ `{trigger}` already exists as a rule.", ephemeral: true);
             return;
         }
 
@@ -53,6 +53,6 @@ public sealed partial class ProfanityGroup
         _db.ProfanityRules.Add(rule);
         await _db.SaveChangesAsync();
 
-        await FollowupAsync($"✅ Rule for `{trigger}` added.");
+        await FollowupAsync($"✅ Rule for `{trigger}` added.", ephemeral: true);
     }
 }

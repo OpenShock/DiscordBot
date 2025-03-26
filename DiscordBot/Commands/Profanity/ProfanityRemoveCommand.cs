@@ -19,13 +19,13 @@ public sealed partial class ProfanityGroup
         var rule = await _db.ProfanityRules.FirstOrDefaultAsync(r => r.Trigger == trigger);
         if (rule == null)
         {
-            await FollowupAsync($"❌ No rule found for `{trigger}`.");
+            await FollowupAsync($"❌ No rule found for `{trigger}`.", ephemeral: true);
             return;
         }
 
         _db.ProfanityRules.Remove(rule);
         await _db.SaveChangesAsync();
 
-        await FollowupAsync($"🗑 Rule for `{trigger}` removed.");
+        await FollowupAsync($"🗑 Rule for `{trigger}` removed.", ephemeral: true);
     }
 }
