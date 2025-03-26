@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
@@ -13,9 +12,8 @@ public sealed class ProfanityDetector : IProfanityDetector
     private readonly OpenShockDiscordContext _db;
     private readonly ILogger<ProfanityDetector> _logger;
     
-    private readonly ReaderWriterLockSlim _rulesLock = new ReaderWriterLockSlim();
-    private ReadOnlyCollection<CompiledProfanityRule> _wholeWordRules = new(new List<CompiledProfanityRule>());
-    private ReadOnlyCollection<CompiledProfanityRule> _containedRules =  new(new List<CompiledProfanityRule>());
+    private readonly ReaderWriterLockSlim _rulesLock = new();
+    private ReadOnlyCollection<CompiledProfanityRule> _rules = new(new List<CompiledProfanityRule>());
 
     public ProfanityDetector(OpenShockDiscordContext db, ILogger<ProfanityDetector> logger)
     {
@@ -29,8 +27,7 @@ public sealed class ProfanityDetector : IProfanityDetector
             .Where(r => r.IsActive)
             .ToListAsync();
 
-        var wholeWord = new List<CompiledProfanityRule>();
-        var contained = new List<CompiledProfanityRule>();
+        var compiledRules = new List<CompiledProfanityRule>();
 
         foreach (var rule in rawRules)
         {
@@ -49,31 +46,26 @@ public sealed class ProfanityDetector : IProfanityDetector
                 }
             }
 
-            var compiledRule = new CompiledProfanityRule
+            compiledRules.Add(new CompiledProfanityRule
             {
                 TriggerWord = rule.Trigger.ToLowerInvariant(),
+                MatchWholeWord = rule.MatchWholeWord,
                 ValidationRegex = validationRegex,
                 SeverityScore = rule.SeverityScore
-            };
-
-            if (rule.MatchWholeWord)
-                wholeWord.Add(compiledRule);
-            else
-                contained.Add(compiledRule);
+            });
         }
 
         _rulesLock.EnterWriteLock();
         try
         {
-            _wholeWordRules = wholeWord.AsReadOnly();
-            _containedRules = contained.AsReadOnly();
+            _rules = compiledRules.AsReadOnly();
         }
         finally
         {
             _rulesLock.ExitWriteLock();
         }
 
-        _logger.LogInformation("Loaded {Count} profanity rules.", _wholeWordRules.Count + _containedRules.Count);
+        _logger.LogInformation("Loaded {Count} profanity rules.", _rules.Count);
     }
 
     public bool TryGetProfanityWeight(string input, out int matchCount, out float totalSeverity)
@@ -84,30 +76,24 @@ public sealed class ProfanityDetector : IProfanityDetector
         _rulesLock.EnterReadLock();
         try
         {
-            if ((_wholeWordRules.Count == 0 && _containedRules.Count == 0) || string.IsNullOrWhiteSpace(input))
+            if (_rules.Count == 0 || string.IsNullOrWhiteSpace(input))
                 return false;
 
             var normalized = input.Normalize(NormalizationForm.FormKC).ToLowerInvariant();
-            var words = normalized.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var words = normalized.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet();
 
-            // Whole word rules
-            foreach (var rule in _wholeWordRules)
+            foreach (var rule in _rules)
             {
-                if (!words.Contains(rule.TriggerWord))
-                    continue;
-
-                if (rule.ValidationRegex != null && !rule.ValidationRegex.IsMatch(normalized))
-                    continue;
-
-                matchCount++;
-                totalSeverity += rule.SeverityScore;
-            }
-
-            // Contained rules
-            foreach (var rule in _containedRules)
-            {
-                if (!normalized.Contains(rule.TriggerWord))
-                    continue;
+                if (rule.MatchWholeWord)
+                {
+                    if (!words.Contains(rule.TriggerWord))
+                        continue;
+                }
+                else
+                {
+                    if (!normalized.Contains(rule.TriggerWord))
+                        continue;
+                }
 
                 if (rule.ValidationRegex != null && !rule.ValidationRegex.IsMatch(normalized))
                     continue;
@@ -126,8 +112,9 @@ public sealed class ProfanityDetector : IProfanityDetector
 
     private sealed class CompiledProfanityRule
     {
-        public required string TriggerWord { get; set; }
-        public required float SeverityScore { get; set; }
+        public required string TriggerWord { get; init; }
+        public bool MatchWholeWord { get; init; }
+        public required float SeverityScore { get; init; }
         public Regex? ValidationRegex { get; init; }
     }
 }
