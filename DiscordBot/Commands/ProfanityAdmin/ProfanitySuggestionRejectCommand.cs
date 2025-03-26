@@ -9,7 +9,7 @@ public sealed partial class ProfanityAdminGroup
     public sealed partial class SuggestionGroup
     {
         [SlashCommand("reject", "Reject a profanity suggestion (admin only).")]
-        public async Task ProfanitySuggestionRejectCommand(ulong id, string reason, bool? matchwholeword, string? validationRegex, string? category, string? comment)
+        public async Task ProfanitySuggestionRejectCommand(long id, string reason, bool? matchwholeword, string? validationRegex, string? category, string? comment)
         {
             if (!_db.Administrators.Any(a => a.DiscordId == Context.User.Id))
             {

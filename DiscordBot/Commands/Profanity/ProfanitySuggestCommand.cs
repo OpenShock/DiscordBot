@@ -11,7 +11,7 @@ namespace OpenShock.DiscordBot.Commands.Profanity;
 public sealed partial class ProfanityGroup
 {
     public static readonly FrozenDictionary<string, string> RelevantCultures =
-        CultureInfo.GetCultures(CultureTypes.NeutralCultures).Where(c => c.EnglishName.All(char.IsLetter)).ToFrozenDictionary(c => c.EnglishName, c => c.Name);
+        CultureInfo.GetCultures(CultureTypes.NeutralCultures).Where(c => c.EnglishName.All(char.IsLetter)).ToFrozenDictionary(c => c.EnglishName.ToLowerInvariant(), c => c.Name);
 
     [SlashCommand("suggest", "Suggest a new word or phrase to be detected as profanity.")]
     public async Task ProfanitySuggestCommand(string trigger, string comment, string language)
@@ -29,7 +29,7 @@ public sealed partial class ProfanityGroup
         trigger = trigger.Normalize(NormalizationForm.FormKC).Trim().ToLowerInvariant();
         comment = comment.Trim();
 
-        if (!RelevantCultures.TryGetValue(language.Trim().ToLower(), out var languageCode))
+        if (!RelevantCultures.TryGetValue(language.Trim().ToLowerInvariant(), out var languageCode))
         {
             await FollowupAsync($"❌ {language} is not a valid language.", ephemeral: ephemeral);
             return;

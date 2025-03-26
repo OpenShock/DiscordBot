@@ -2,13 +2,13 @@
 
 public partial class ProfanitySuggestion
 {
-    public ulong Id { get; set; }
+    public long Id { get; set; }
 
-    public string Trigger { get; set; }
+    public string Trigger { get; set; } = null!;
 
-    public string Comment { get; set; }
+    public string Comment { get; set; } = null!;
 
-    public string LanguageCode { get; set; }
+    public string LanguageCode { get; set; } = null!;
 
     public ulong SuggestedByUserId { get; set; }
 

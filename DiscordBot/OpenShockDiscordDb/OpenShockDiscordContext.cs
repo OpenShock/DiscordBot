@@ -121,7 +121,7 @@ public partial class OpenShockDiscordContext : DbContext
 
             entity.HasKey(e => e.Id).HasName("profanity_rules_pkey");
 
-            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnName("id").UseIdentityByDefaultColumn();
 
             entity.Property(e => e.Trigger)
                 .IsRequired()
@@ -170,7 +170,7 @@ public partial class OpenShockDiscordContext : DbContext
 
             entity.HasKey(e => e.Id).HasName("profanity_suggestions_pkey");
 
-            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnName("id").UseIdentityByDefaultColumn();
 
             entity.Property(e => e.Trigger)
                 .IsRequired()
@@ -201,7 +201,7 @@ public partial class OpenShockDiscordContext : DbContext
             entity.HasKey(e => e.Id).HasName("rejected_profanity_suggestions_pkey");
 
             entity.Property(e => e.Id)
-                .HasColumnName("id");
+                .HasColumnName("id").UseIdentityByDefaultColumn();
 
             entity.Property(e => e.Trigger)
                 .IsRequired()

@@ -8,7 +8,7 @@ public sealed partial class ProfanityAdminGroup
     public sealed partial class SuggestionGroup
     {
         [SlashCommand("accept", "Accept a profanity suggestion (admin only).")]
-        public async Task ProfanitySuggestionAcceptCommand(ulong id, float? severity, bool? matchwholeword, string? validationRegex, string? category, string? comment)
+        public async Task ProfanitySuggestionAcceptCommand(long id, float? severity, bool? matchwholeword, string? validationRegex, string? category, string? comment)
         {
             await DeferAsync(ephemeral: true);
 

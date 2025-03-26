@@ -2,13 +2,13 @@
 
 public partial class RejectedProfanitySuggestion
 {
-    public ulong Id { get; set; }
+    public long Id { get; set; }
 
-    public string Trigger { get; set; }
+    public string Trigger { get; set; } = null!;
 
-    public string Reason { get; set; }
+    public string Reason { get; set; } = null!;
 
-    public string LanguageCode { get; set; }
+    public string LanguageCode { get; set; } = null!;
 
     public ulong SuggestedByUserId { get; set; }
 
