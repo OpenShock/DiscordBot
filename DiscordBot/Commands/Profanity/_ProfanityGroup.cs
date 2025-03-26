@@ -2,6 +2,7 @@
 using Discord.Interactions;
 using Microsoft.Extensions.Logging;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
+using OpenShock.DiscordBot.Services;
 
 namespace OpenShock.DiscordBot.Commands.Profanity;
 
@@ -11,16 +12,19 @@ namespace OpenShock.DiscordBot.Commands.Profanity;
 public sealed partial class ProfanityGroup : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly OpenShockDiscordContext _db;
+    private readonly IProfanityDetector _profanityDetector;
     private readonly ILogger<ProfanityGroup> _logger;
 
     /// <summary>
     /// Default constructor for the ProfanityGroup
     /// </summary>
     /// <param name="db"></param>
+    /// <param name="profanityDetector"></param>
     /// <param name="logger"></param>
-    public ProfanityGroup(OpenShockDiscordContext db, ILogger<ProfanityGroup> logger)
+    public ProfanityGroup(OpenShockDiscordContext db, IProfanityDetector profanityDetector, ILogger<ProfanityGroup> logger)
     {
         _db = db;
+        _profanityDetector = profanityDetector;
         _logger = logger;
     }
 }

@@ -30,5 +30,7 @@ public sealed partial class ProfanityGroup
         await _db.SaveChangesAsync();
 
         await FollowupAsync($"🗑 Rule for `{trigger}` removed.", ephemeral: true);
+
+        await _profanityDetector.LoadProfanityRulesAsync();
     }
 }
