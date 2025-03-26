@@ -45,6 +45,154 @@ namespace OpenShock.DiscordBot.Migrations
                     b.ToTable("administrators", (string)null);
                 });
 
+            modelBuilder.Entity("OpenShock.DiscordBot.OpenShockDiscordDb.ProfanityRule", b =>
+                {
+                    b.Property<decimal>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("numeric(20,0)")
+                        .HasColumnName("id");
+
+                    b.Property<decimal?>("AddedByUserId")
+                        .HasColumnType("numeric(20,0)")
+                        .HasColumnName("added_by_user_id");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("category");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasColumnName("comment");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("LanguageCode")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("language_code");
+
+                    b.Property<bool>("MatchWholeWord")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("match_whole_word");
+
+                    b.Property<float>("SeverityScore")
+                        .HasColumnType("real")
+                        .HasColumnName("severity_score");
+
+                    b.Property<string>("Trigger")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("trigger");
+
+                    b.Property<string>("ValidationRegex")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasColumnName("validation_regex");
+
+                    b.HasKey("Id")
+                        .HasName("profanity_rules_pkey");
+
+                    b.ToTable("profanity_rules", (string)null);
+                });
+
+            modelBuilder.Entity("OpenShock.DiscordBot.OpenShockDiscordDb.ProfanitySuggestion", b =>
+                {
+                    b.Property<decimal>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("numeric(20,0)")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasColumnName("comment");
+
+                    b.Property<string>("LanguageCode")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("language_code");
+
+                    b.Property<DateTimeOffset>("SuggestedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("suggested_at")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<decimal>("SuggestedByUserId")
+                        .HasColumnType("numeric(20,0)")
+                        .HasColumnName("suggested_by_user_id");
+
+                    b.Property<string>("Trigger")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("trigger");
+
+                    b.HasKey("Id")
+                        .HasName("profanity_suggestions_pkey");
+
+                    b.ToTable("profanity_suggestions", (string)null);
+                });
+
+            modelBuilder.Entity("OpenShock.DiscordBot.OpenShockDiscordDb.RejectedProfanitySuggestion", b =>
+                {
+                    b.Property<decimal>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("numeric(20,0)")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("LanguageCode")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("language_code");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasColumnName("reason");
+
+                    b.Property<decimal>("SuggestedByUserId")
+                        .HasColumnType("numeric(20,0)")
+                        .HasColumnName("suggested_by_user_id");
+
+                    b.Property<string>("Trigger")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("trigger");
+
+                    b.HasKey("Id")
+                        .HasName("rejected_profanity_suggestions_pkey");
+
+                    b.ToTable("rejected_profanity_suggestions", (string)null);
+                });
+
             modelBuilder.Entity("OpenShock.DiscordBot.OpenShockDiscordDb.User", b =>
                 {
                     b.Property<decimal>("DiscordId")

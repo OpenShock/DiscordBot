@@ -12,7 +12,7 @@ using OpenShock.DiscordBot.OpenShockDiscordDb;
 namespace OpenShock.DiscordBot.Migrations
 {
     [DbContext(typeof(OpenShockDiscordContext))]
-    [Migration("20250326130911_AddAdvancedProfanityBehaviour")]
+    [Migration("20250326140322_AddAdvancedProfanityBehaviour")]
     partial class AddAdvancedProfanityBehaviour
     {
         /// <inheritdoc />
@@ -24,6 +24,29 @@ namespace OpenShock.DiscordBot.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("OpenShock.DiscordBot.OpenShockDiscordDb.BotAdmin", b =>
+                {
+                    b.Property<decimal>("DiscordId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("numeric(20,0)")
+                        .HasColumnName("discord_id");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_on")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<bool>("IsRemovable")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_removable");
+
+                    b.HasKey("DiscordId")
+                        .HasName("administrators_pkey");
+
+                    b.ToTable("administrators", (string)null);
+                });
 
             modelBuilder.Entity("OpenShock.DiscordBot.OpenShockDiscordDb.ProfanityRule", b =>
                 {
