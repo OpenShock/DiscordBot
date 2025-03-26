@@ -3,6 +3,7 @@ using Discord.Interactions;
 using Microsoft.Extensions.Logging;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
 using OpenShock.DiscordBot.Services;
+using OpenShock.DiscordBot.Services.ProfanityDetector;
 
 namespace OpenShock.DiscordBot.Commands.Profanity;
 
