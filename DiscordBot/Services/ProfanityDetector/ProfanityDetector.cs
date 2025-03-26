@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
 using System.Text;
@@ -10,12 +12,10 @@ public sealed class ProfanityDetector : IProfanityDetector
 {
     private readonly OpenShockDiscordContext _db;
     private readonly ILogger<ProfanityDetector> _logger;
-
-    private List<CompiledProfanityRule> _wholeWordRules = [];
-    private List<CompiledProfanityRule> _containedRules = [];
-
-    private DateTimeOffset _lastLoadTime = DateTimeOffset.MinValue;
-    private static readonly TimeSpan ReloadInterval = TimeSpan.FromMinutes(10);
+    
+    private readonly ReaderWriterLockSlim _rulesLock = new ReaderWriterLockSlim();
+    private ReadOnlyCollection<CompiledProfanityRule> _wholeWordRules = new(new List<CompiledProfanityRule>());
+    private ReadOnlyCollection<CompiledProfanityRule> _containedRules =  new(new List<CompiledProfanityRule>());
 
     public ProfanityDetector(OpenShockDiscordContext db, ILogger<ProfanityDetector> logger)
     {
@@ -25,10 +25,6 @@ public sealed class ProfanityDetector : IProfanityDetector
 
     public async Task LoadProfanityRulesAsync()
     {
-        if (DateTimeOffset.UtcNow - _lastLoadTime < ReloadInterval &&
-            (_wholeWordRules.Count > 0 || _containedRules.Count > 0))
-            return;
-
         var rawRules = await _db.ProfanityRules
             .Where(r => r.IsActive)
             .ToListAsync();
@@ -66,9 +62,16 @@ public sealed class ProfanityDetector : IProfanityDetector
                 contained.Add(compiledRule);
         }
 
-        _wholeWordRules = wholeWord;
-        _containedRules = contained;
-        _lastLoadTime = DateTimeOffset.UtcNow;
+        _rulesLock.EnterWriteLock();
+        try
+        {
+            _wholeWordRules = wholeWord.AsReadOnly();
+            _containedRules = contained.AsReadOnly();
+        }
+        finally
+        {
+            _rulesLock.ExitWriteLock();
+        }
 
         _logger.LogInformation("Loaded {Count} profanity rules.", _wholeWordRules.Count + _containedRules.Count);
     }
@@ -77,40 +80,48 @@ public sealed class ProfanityDetector : IProfanityDetector
     {
         matchCount = 0;
         totalSeverity = 0f;
-
-        if ((_wholeWordRules.Count == 0 && _containedRules.Count == 0) || string.IsNullOrWhiteSpace(input))
-            return false;
-
-        string normalized = input.Normalize(NormalizationForm.FormKC).ToLowerInvariant();
-        string[] words = normalized.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-
-        // Whole word rules
-        foreach (var rule in _wholeWordRules)
+        
+        _rulesLock.EnterReadLock();
+        try
         {
-            if (!words.Contains(rule.TriggerWord))
-                continue;
+            if ((_wholeWordRules.Count == 0 && _containedRules.Count == 0) || string.IsNullOrWhiteSpace(input))
+                return false;
 
-            if (rule.ValidationRegex != null && !rule.ValidationRegex.IsMatch(normalized))
-                continue;
+            var normalized = input.Normalize(NormalizationForm.FormKC).ToLowerInvariant();
+            var words = normalized.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
-            matchCount++;
-            totalSeverity += rule.SeverityScore;
+            // Whole word rules
+            foreach (var rule in _wholeWordRules)
+            {
+                if (!words.Contains(rule.TriggerWord))
+                    continue;
+
+                if (rule.ValidationRegex != null && !rule.ValidationRegex.IsMatch(normalized))
+                    continue;
+
+                matchCount++;
+                totalSeverity += rule.SeverityScore;
+            }
+
+            // Contained rules
+            foreach (var rule in _containedRules)
+            {
+                if (!normalized.Contains(rule.TriggerWord))
+                    continue;
+
+                if (rule.ValidationRegex != null && !rule.ValidationRegex.IsMatch(normalized))
+                    continue;
+
+                matchCount++;
+                totalSeverity += rule.SeverityScore;
+            }
+
+            return matchCount > 0;
         }
-
-        // Contained rules
-        foreach (var rule in _containedRules)
+        finally
         {
-            if (!normalized.Contains(rule.TriggerWord))
-                continue;
-
-            if (rule.ValidationRegex != null && !rule.ValidationRegex.IsMatch(normalized))
-                continue;
-
-            matchCount++;
-            totalSeverity += rule.SeverityScore;
+            _rulesLock.ExitReadLock();
         }
-
-        return matchCount > 0;
     }
 
     private sealed class CompiledProfanityRule
