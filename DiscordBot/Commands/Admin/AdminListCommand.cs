@@ -5,8 +5,8 @@ namespace OpenShock.DiscordBot.Commands.Admin;
 
 public sealed partial class AdminGroup
 {
-    [SlashCommand("remove", "Remove an administrator from the bot.")]
-    public async Task AdminRemoveCommand(SocketUser user)
+    [SlashCommand("list", "List all administrators.")]
+    public async Task AdminListCommand()
     {
         await DeferAsync(ephemeral: true);
 
@@ -16,23 +16,18 @@ public sealed partial class AdminGroup
             return;
         }
 
-        var admin = _db.Administrators.FirstOrDefault(a => a.DiscordId == user.Id);
+        var admins = _db.Administrators.ToList();
 
-        if (admin == null)
+        if (admins.Count == 0)
         {
-            await FollowupAsync("That user is not an administrator.", ephemeral: true);
+            await FollowupAsync("There are no administrators yet.", ephemeral: true);
             return;
         }
 
-        if (!admin.IsRemovable)
-        {
-            await FollowupAsync("This administrator cannot be removed.", ephemeral: true);
-            return;
-        }
+        var adminMentions = admins
+            .Select(a => $"<@{a.DiscordId}> {(a.IsRemovable ? "" : "(Owner)")}")
+            .ToList();
 
-        _db.Administrators.Remove(admin);
-        await _db.SaveChangesAsync();
-
-        await FollowupAsync($"Removed {user.Mention} from administrators.", ephemeral: true);
+        await FollowupAsync($"**Administrators:**\n{string.Join("\n", adminMentions)}", ephemeral: true);
     }
 }
