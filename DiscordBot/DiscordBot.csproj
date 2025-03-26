@@ -7,8 +7,8 @@
         <Nullable>enable</Nullable>
         <Company>OpenShock</Company>
         <Product>DiscordBot</Product>
-        <AssemblyVersion>1.0.1</AssemblyVersion>
-        <FileVersion>1.0.1</FileVersion>
+        <AssemblyVersion>1.1.0</AssemblyVersion>
+        <FileVersion>1.1.0</FileVersion>
         <NeutralLanguage>en-001</NeutralLanguage>
         <AssemblyName>OpenShock.DiscordBot</AssemblyName>
         <RootNamespace>OpenShock.DiscordBot</RootNamespace>
