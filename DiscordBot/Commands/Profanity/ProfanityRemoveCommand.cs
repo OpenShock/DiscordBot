@@ -1,5 +1,4 @@
-﻿using Discord;
-using Discord.Interactions;
+﻿using Discord.Interactions;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 

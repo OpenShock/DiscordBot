@@ -1,7 +1,5 @@
-﻿using Discord;
-using Discord.Interactions;
+﻿using Discord.Interactions;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
-using OpenShock.DiscordBot.Utils;
 
 namespace OpenShock.DiscordBot.Commands.Profanity;
 
