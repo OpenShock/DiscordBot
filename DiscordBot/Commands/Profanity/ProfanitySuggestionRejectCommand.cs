@@ -1,0 +1,41 @@
+﻿using Discord;
+using Discord.Interactions;
+using Microsoft.EntityFrameworkCore;
+using OpenShock.DiscordBot.OpenShockDiscordDb;
+
+namespace OpenShock.DiscordBot.Commands.Profanity;
+
+public sealed partial class ProfanityGroup
+{
+    public sealed partial class SuggestionGroup
+    {
+        [SlashCommand("reject", "Reject a profanity suggestion (admin only).")]
+        [RequireContext(ContextType.Guild)]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public async Task ProfanitySuggestionRejectCommand(ulong id, string reason, bool? matchwholeword, string? validationRegex, string? category, string? comment)
+        {
+            var suggestion = await _db.ProfanitySuggestions.FirstOrDefaultAsync(s => s.Id == id);
+            if (suggestion == null)
+            {
+                await RespondAsync("❌ Suggestion not found or already reviewed.");
+                return;
+            }
+
+            var rejection = new RejectedProfanitySuggestion
+            {
+                Trigger = suggestion.Trigger,
+                Reason = reason,
+                LanguageCode = suggestion.LanguageCode,
+                SuggestedByUserId = suggestion.SuggestedByUserId,
+                CreatedAt = DateTimeOffset.UtcNow,
+            };
+
+            _db.RejectedProfanitySuggestions.Add(rejection);
+            _db.Remove(suggestion);
+
+            await _db.SaveChangesAsync();
+
+            await RespondAsync($"🚫 Suggestion for `{suggestion.Trigger}` rejected.");
+        }
+    }
+}
