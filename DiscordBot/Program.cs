@@ -126,7 +126,7 @@ builder.ConfigureServices((context, services) =>
     var messageHandler = host.Services.GetRequiredService<MessageHandler>();
 
     client.Log += LoggingUtils.LogAsync;
-    client.Ready += () => ReadyAsync(client, interactionService, profanityDetector);
+    client.Ready += () => ReadyAsync(client, interactionService);
 
     client.MessageReceived += messageHandler.HandleMessageAsync;
 
