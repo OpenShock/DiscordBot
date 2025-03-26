@@ -8,7 +8,7 @@ public sealed partial class ProfanityAdminGroup
     public sealed partial class SuggestionGroup
     {
         [SlashCommand("accept", "Accept a profanity suggestion (admin only).")]
-        public async Task ProfanitySuggestionAcceptCommand(long id, float? severity, bool? matchwholeword, string? validationRegex, string? category, string? comment)
+        public async Task ProfanitySuggestionAcceptCommand(long id, float severity = 0.5f, bool matchwholeword = true, string? validationRegex = null, string? category = null, string? comment = null)
         {
             await DeferAsync(ephemeral: true);
 
@@ -28,9 +28,9 @@ public sealed partial class ProfanityAdminGroup
             var rule = new ProfanityRule
             {
                 Trigger = suggestion.Trigger,
-                SeverityScore = severity ?? 0.5f,
+                SeverityScore = severity,
                 IsActive = true,
-                MatchWholeWord = matchwholeword ?? true,
+                MatchWholeWord = matchwholeword,
                 ValidationRegex = validationRegex,
                 LanguageCode = suggestion.LanguageCode,
                 Category = category,
