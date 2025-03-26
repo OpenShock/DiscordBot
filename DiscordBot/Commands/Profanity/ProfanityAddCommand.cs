@@ -9,8 +9,6 @@ namespace OpenShock.DiscordBot.Commands.Profanity;
 public sealed partial class ProfanityGroup
 {
     [SlashCommand("add", "Add a profanity rule directly (admin only).")]
-    [RequireContext(ContextType.Guild)]
-    [RequireUserPermission(GuildPermission.Administrator)]
     public async Task ProfanityAddCommand(
     string trigger,
     string language,
@@ -21,6 +19,12 @@ public sealed partial class ProfanityGroup
     string? comment = null)
     {
         await DeferAsync(ephemeral: true);
+
+        if (!_db.Administrators.Any(a => a.DiscordId == Context.User.Id))
+        {
+            await FollowupAsync("You are not an administrator.", ephemeral: true);
+            return;
+        }
 
         trigger = trigger.Normalize(NormalizationForm.FormKC).Trim().ToLowerInvariant();
 

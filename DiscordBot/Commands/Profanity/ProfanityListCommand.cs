@@ -7,11 +7,15 @@ namespace OpenShock.DiscordBot.Commands.Profanity;
 public sealed partial class ProfanityGroup
 {
     [SlashCommand("list", "List current profanity rules (admin only).")]
-    [RequireContext(ContextType.Guild)]
-    [RequireUserPermission(GuildPermission.Administrator)]
     public async Task ProfanityListCommand()
     {
         await DeferAsync(ephemeral: true);
+
+        if (!_db.Administrators.Any(a => a.DiscordId == Context.User.Id))
+        {
+            await FollowupAsync("You are not an administrator.", ephemeral: true);
+            return;
+        }
 
         var rules = await _db.ProfanityRules
             .OrderByDescending(r => r.CreatedAt)

@@ -8,11 +8,15 @@ namespace OpenShock.DiscordBot.Commands.Profanity;
 public sealed partial class ProfanityGroup
 {
     [SlashCommand("remove", "Remove an existing profanity rule (admin only).")]
-    [RequireContext(ContextType.Guild)]
-    [RequireUserPermission(GuildPermission.Administrator)]
     public async Task ProfanityRemoveCommand(string trigger)
     {
         await DeferAsync(ephemeral: true);
+
+        if (!_db.Administrators.Any(a => a.DiscordId == Context.User.Id))
+        {
+            await FollowupAsync("You are not an administrator.", ephemeral: true);
+            return;
+        }
 
         trigger = trigger.Normalize(NormalizationForm.FormKC).Trim().ToLowerInvariant();
 

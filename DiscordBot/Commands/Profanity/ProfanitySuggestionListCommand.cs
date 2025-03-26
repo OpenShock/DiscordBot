@@ -10,11 +10,15 @@ public sealed partial class ProfanityGroup
     public sealed partial class SuggestionGroup
     {
         [SlashCommand("list", "List submitted profanity suggestions (admin only).")]
-        [RequireContext(ContextType.Guild)]
-        [RequireUserPermission(GuildPermission.Administrator)]
         public async Task ProfanitySuggestionListCommand()
         {
             await DeferAsync(ephemeral: true);
+
+            if (!_db.Administrators.Any(a => a.DiscordId == Context.User.Id))
+            {
+                await FollowupAsync("You are not an administrator.", ephemeral: true);
+                return;
+            }
 
             var suggestions = await _db.ProfanitySuggestions
                 .OrderByDescending(s => s.SuggestedAt)

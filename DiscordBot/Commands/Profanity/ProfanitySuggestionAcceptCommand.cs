@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
+using OpenShock.DiscordBot.Utils;
 
 namespace OpenShock.DiscordBot.Commands.Profanity;
 
@@ -9,11 +10,15 @@ public sealed partial class ProfanityGroup
     public sealed partial class SuggestionGroup
     {
         [SlashCommand("accept", "Accept a profanity suggestion (admin only).")]
-        [RequireContext(ContextType.Guild)]
-        [RequireUserPermission(GuildPermission.Administrator)]
         public async Task ProfanitySuggestionAcceptCommand(ulong id, float? severity, bool? matchwholeword, string? validationRegex, string? category, string? comment)
         {
             await DeferAsync(ephemeral: true);
+
+            if (!_db.Administrators.Any(a => a.DiscordId == Context.User.Id))
+            {
+                await FollowupAsync("You are not an administrator.", ephemeral: true);
+                return;
+            }
 
             var suggestion = await _db.ProfanitySuggestions.FindAsync(id);
             if (suggestion == null)
