@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace OpenShock.DiscordBot.Services.ProfanityDetector;
 
-public sealed class ProfanityDetector
+public sealed class ProfanityDetector : IProfanityDetector
 {
     private readonly OpenShockDiscordContext _db;
     private readonly ILogger<ProfanityDetector> _logger;

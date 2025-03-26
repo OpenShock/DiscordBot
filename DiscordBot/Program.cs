@@ -13,6 +13,7 @@ using OpenShock.DiscordBot.Services.UserRepository;
 using OpenShock.DiscordBot.Utils;
 using Serilog;
 using System.Reflection;
+using OpenShock.DiscordBot.Services.ProfanityDetector;
 
 try
 {
@@ -66,6 +67,7 @@ builder.ConfigureServices((context, services) =>
     });
 
     services.AddSingleton<IUserRepository, UserRepository>();
+    services.AddSingleton<IProfanityDetector, ProfanityDetector>();
     services.AddSingleton<IOpenShockBackendService, OpenShockBackendService>();
     services.AddSingleton<MessageHandler>();
 
@@ -116,13 +118,15 @@ builder.ConfigureServices((context, services) =>
 
     // <---- Initialize Service stuff, this also instantiates the singletons!!! ---->
 
+    await host.Services.GetRequiredService<IProfanityDetector>().LoadProfanityRulesAsync();
+
     var client = host.Services.GetRequiredService<DiscordSocketClient>();
     var interactionService = host.Services.GetRequiredService<InteractionService>();
     var interactionHandler = host.Services.GetRequiredService<InteractionHandler>();
     var messageHandler = host.Services.GetRequiredService<MessageHandler>();
 
     client.Log += LoggingUtils.LogAsync;
-    client.Ready += () => ReadyAsync(client, interactionService);
+    client.Ready += () => ReadyAsync(client, interactionService, profanityDetector);
 
     client.MessageReceived += messageHandler.HandleMessageAsync;
 
