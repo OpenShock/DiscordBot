@@ -15,14 +15,14 @@ public sealed partial class ProfanityAdminGroup
         {
             await DeferAsync(ephemeral: true);
 
-            if (!Queryable.Any<BotAdmin>(_db.Administrators, a => a.DiscordId == Context.User.Id))
+            if (!_db.Administrators.Any(a => a.DiscordId == Context.User.Id))
             {
                 await FollowupAsync("You are not an administrator.", ephemeral: true);
                 return;
             }
 
-            var suggestions = await Queryable
-                .OrderByDescending<ProfanitySuggestion, DateTimeOffset>(_db.ProfanitySuggestions, s => s.SuggestedAt)
+            var suggestions = await _db.ProfanitySuggestions
+                .OrderByDescending(s => s.SuggestedAt)
                 .Take(10)
                 .ToListAsync();
 

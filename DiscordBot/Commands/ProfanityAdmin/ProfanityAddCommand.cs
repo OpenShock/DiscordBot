@@ -20,7 +20,7 @@ public sealed partial class ProfanityAdminGroup
     {
         await DeferAsync(ephemeral: true);
 
-        if (!Queryable.Any<BotAdmin>(_db.Administrators, a => a.DiscordId == Context.User.Id))
+        if (!_db.Administrators.Any(a => a.DiscordId == Context.User.Id))
         {
             await FollowupAsync("You are not an administrator.", ephemeral: true);
             return;
@@ -34,7 +34,7 @@ public sealed partial class ProfanityAdminGroup
             return;
         }
 
-        if (await EntityFrameworkQueryableExtensions.AnyAsync<ProfanityRule>(_db.ProfanityRules, r => r.Trigger == trigger))
+        if (await _db.ProfanityRules.AnyAsync(r => r.Trigger == trigger))
         {
             await FollowupAsync($"⚠️ `{trigger}` already exists as a rule.", ephemeral: true);
             return;

@@ -12,7 +12,7 @@ public sealed partial class ProfanityAdminGroup
         {
             await DeferAsync(ephemeral: true);
 
-            if (!Queryable.Any<BotAdmin>(_db.Administrators, a => a.DiscordId == Context.User.Id))
+            if (!_db.Administrators.Any(a => a.DiscordId == Context.User.Id))
             {
                 await FollowupAsync("You are not an administrator.", ephemeral: true);
                 return;
@@ -21,7 +21,7 @@ public sealed partial class ProfanityAdminGroup
             var suggestion = await _db.ProfanitySuggestions.FindAsync(id);
             if (suggestion == null)
             {
-                await RespondAsync("❌ Suggestion not found or already reviewed.", ephemeral: true);
+                await FollowupAsync("❌ Suggestion not found or already reviewed.", ephemeral: true);
                 return;
             }
 
@@ -42,7 +42,7 @@ public sealed partial class ProfanityAdminGroup
             _db.ProfanityRules.Add(rule);
             await _db.SaveChangesAsync();
 
-            await RespondAsync($"✅ Suggestion accepted and rule created for `{rule.Trigger}`.", ephemeral: true);
+            await FollowupAsync($"✅ Suggestion accepted and rule created for `{rule.Trigger}`.", ephemeral: true);
 
             await _profanityDetector.LoadProfanityRulesAsync();
         }
