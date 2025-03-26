@@ -12,13 +12,7 @@ public sealed partial class AdminGroup
 
         if (_db.Administrators.Any())
         {
-            if (!_db.Administrators.Any(a => a.DiscordId == Context.User.Id))
-            {
-                await FollowupAsync("An administrator already exists.", ephemeral: true);
-                return;
-            }
-
-            await FollowupAsync("An administrator already exists. Use `/admin add` if you are already an admin.", ephemeral: true);
+            await FollowupAsync("An administrator already exists.", ephemeral: true);
             return;
         }
 
