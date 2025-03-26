@@ -54,15 +54,27 @@ builder.ConfigureServices((context, services) =>
 
     services.AddSingleton(discordBotConfig);
 
-    services.AddDbContextPool<OpenShockDiscordContext>(x =>
+    services.AddDbContextPool<OpenShockDiscordContext>(optionsBuilder =>
     {
-        x.UseNpgsql(discordBotConfig.Db.Conn);
+        optionsBuilder.UseNpgsql(discordBotConfig.Db.Conn);
 
         // ReSharper disable once InvertIf
         if (discordBotConfig.Db.Debug)
         {
-            x.EnableDetailedErrors();
-            x.EnableSensitiveDataLogging();
+            optionsBuilder.EnableDetailedErrors();
+            optionsBuilder.EnableSensitiveDataLogging();
+        }
+    });
+
+    services.AddPooledDbContextFactory<OpenShockDiscordContext>(optionsBuilder =>
+    {
+        optionsBuilder.UseNpgsql(discordBotConfig.Db.Conn);
+        
+        // ReSharper disable once InvertIf
+        if (discordBotConfig.Db.Debug)
+        {
+            optionsBuilder.EnableDetailedErrors();
+            optionsBuilder.EnableSensitiveDataLogging();
         }
     });
 

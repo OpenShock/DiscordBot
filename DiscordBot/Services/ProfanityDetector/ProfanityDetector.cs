@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Immutable;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
@@ -9,21 +9,23 @@ namespace OpenShock.DiscordBot.Services.ProfanityDetector;
 
 public sealed class ProfanityDetector : IProfanityDetector
 {
-    private readonly OpenShockDiscordContext _db;
+    private readonly IDbContextFactory<OpenShockDiscordContext> _dbFactory;
     private readonly ILogger<ProfanityDetector> _logger;
     
     private readonly ReaderWriterLockSlim _rulesLock = new();
-    private ReadOnlyCollection<CompiledProfanityRule> _rules = new(new List<CompiledProfanityRule>());
+    private ImmutableArray<CompiledProfanityRule> _rules = [];
 
-    public ProfanityDetector(OpenShockDiscordContext db, ILogger<ProfanityDetector> logger)
+    public ProfanityDetector(IDbContextFactory<OpenShockDiscordContext> dbFactory, ILogger<ProfanityDetector> logger)
     {
-        _db = db;
+        _dbFactory = dbFactory;
         _logger = logger;
     }
 
     public async Task LoadProfanityRulesAsync()
     {
-        var rawRules = await _db.ProfanityRules
+        await using var db = await _dbFactory.CreateDbContextAsync();
+        
+        var rawRules = await db.ProfanityRules
             .Where(r => r.IsActive)
             .ToListAsync();
 
@@ -58,14 +60,14 @@ public sealed class ProfanityDetector : IProfanityDetector
         _rulesLock.EnterWriteLock();
         try
         {
-            _rules = compiledRules.AsReadOnly();
+            _rules = [..compiledRules];
         }
         finally
         {
             _rulesLock.ExitWriteLock();
         }
 
-        _logger.LogInformation("Loaded {Count} profanity rules.", _rules.Count);
+        _logger.LogInformation("Loaded {Count} profanity rules.", _rules.Length);
     }
 
     public bool TryGetProfanityWeight(string input, out int matchCount, out float totalSeverity)
@@ -76,7 +78,7 @@ public sealed class ProfanityDetector : IProfanityDetector
         _rulesLock.EnterReadLock();
         try
         {
-            if (_rules.Count == 0 || string.IsNullOrWhiteSpace(input))
+            if (_rules.Length <= 0 || string.IsNullOrWhiteSpace(input))
                 return false;
 
             var normalized = input.Normalize(NormalizationForm.FormKC).ToLowerInvariant();
