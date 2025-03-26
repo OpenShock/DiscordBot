@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
 using OpenShock.DiscordBot.Services;
+using OpenShock.DiscordBot.Services.ProfanityDetector;
 using OpenShock.DiscordBot.Utils;
 using OpenShock.SDK.CSharp.Models;
 
@@ -12,11 +13,13 @@ namespace OpenShock.DiscordBot;
 public sealed partial class MessageHandler
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly IProfanityDetector _profanityDetector;
 
 
-    public MessageHandler(IServiceProvider serviceProvider)
+    public MessageHandler(IServiceProvider serviceProvider, IProfanityDetector profanityDetector)
     {
         _serviceProvider = serviceProvider;
+        _profanityDetector = profanityDetector;
     }
 
     private static async Task<bool> CheckUserProfanityShockingOptIn(AsyncServiceScope scope, ulong userDiscordId)
@@ -53,7 +56,7 @@ public sealed partial class MessageHandler
         }
 
         // Check if the message contains a swear word
-        if (ProfanityDetector.TryGetProfanityWeight(message.Content, out int count, out float weight))
+        if (_profanityDetector.TryGetProfanityWeight(message.Content, out int count, out float weight))
         {
             float intensityPercent = weight * 100f;
 

@@ -13,6 +13,7 @@ using OpenShock.DiscordBot.Services.UserRepository;
 using OpenShock.DiscordBot.Utils;
 using Serilog;
 using System.Reflection;
+using OpenShock.DiscordBot.Services.ProfanityDetector;
 
 try
 {
@@ -53,19 +54,32 @@ builder.ConfigureServices((context, services) =>
 
     services.AddSingleton(discordBotConfig);
 
-    services.AddDbContextPool<OpenShockDiscordContext>(x =>
+    services.AddDbContextPool<OpenShockDiscordContext>(optionsBuilder =>
     {
-        x.UseNpgsql(discordBotConfig.Db.Conn);
+        optionsBuilder.UseNpgsql(discordBotConfig.Db.Conn);
 
         // ReSharper disable once InvertIf
         if (discordBotConfig.Db.Debug)
         {
-            x.EnableDetailedErrors();
-            x.EnableSensitiveDataLogging();
+            optionsBuilder.EnableDetailedErrors();
+            optionsBuilder.EnableSensitiveDataLogging();
+        }
+    });
+
+    services.AddPooledDbContextFactory<OpenShockDiscordContext>(optionsBuilder =>
+    {
+        optionsBuilder.UseNpgsql(discordBotConfig.Db.Conn);
+        
+        // ReSharper disable once InvertIf
+        if (discordBotConfig.Db.Debug)
+        {
+            optionsBuilder.EnableDetailedErrors();
+            optionsBuilder.EnableSensitiveDataLogging();
         }
     });
 
     services.AddSingleton<IUserRepository, UserRepository>();
+    services.AddSingleton<IProfanityDetector, ProfanityDetector>();
     services.AddSingleton<IOpenShockBackendService, OpenShockBackendService>();
     services.AddSingleton<MessageHandler>();
 
@@ -115,6 +129,8 @@ builder.ConfigureServices((context, services) =>
     }
 
     // <---- Initialize Service stuff, this also instantiates the singletons!!! ---->
+
+    await host.Services.GetRequiredService<IProfanityDetector>().LoadProfanityRulesAsync();
 
     var client = host.Services.GetRequiredService<DiscordSocketClient>();
     var interactionService = host.Services.GetRequiredService<InteractionService>();
