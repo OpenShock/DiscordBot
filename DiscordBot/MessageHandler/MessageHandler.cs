@@ -58,7 +58,7 @@ public sealed partial class MessageHandler
         // Check if the message contains a swear word
         if (_profanityDetector.TryGetProfanityWeight(message.Content, out int count, out float weight))
         {
-            float intensityPercent = weight * 100f;
+            float intensityPercent = MathF.Min(weight, 1f) * 100f;
 
             var authorDiscordId = message.Author.Id;
 
