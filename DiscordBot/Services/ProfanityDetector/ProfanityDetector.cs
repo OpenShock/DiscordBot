@@ -47,6 +47,10 @@ public sealed class ProfanityDetector : IProfanityDetector
                     continue;
                 }
             }
+            else if (!rule.MatchWholeWord)
+            {
+                validationRegex = new Regex(Regex.Escape(rule.Trigger), RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            }
 
             compiledRules.Add(new CompiledProfanityRule
             {
@@ -86,22 +90,23 @@ public sealed class ProfanityDetector : IProfanityDetector
 
             foreach (var rule in _rules)
             {
+                int count = 0;
+                
                 if (rule.MatchWholeWord)
                 {
-                    if (!words.Contains(rule.TriggerWord))
-                        continue;
+                    count = words.Count(w => w == rule.TriggerWord);
                 }
                 else
                 {
-                    if (!normalized.Contains(rule.TriggerWord))
-                        continue;
+                    if (!normalized.Contains(rule.TriggerWord)) continue;
+
+                    count = rule.ValidationRegex?.Matches(input).Count ?? 1; // Really shouldnt happpen but yeah
                 }
 
-                if (rule.ValidationRegex != null && !rule.ValidationRegex.IsMatch(normalized))
-                    continue;
+                if (count <= 0) continue;
 
-                matchCount++;
-                totalSeverity += rule.SeverityScore;
+                matchCount += count;
+                totalSeverity += count * rule.SeverityScore;
             }
 
             return matchCount > 0;

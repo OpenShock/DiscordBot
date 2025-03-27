@@ -13,7 +13,7 @@ public sealed partial class ProfanityGroup
     public static readonly FrozenDictionary<string, string> RelevantCultures =
         CultureInfo.GetCultures(CultureTypes.NeutralCultures).Where(c => c.EnglishName.All(char.IsLetter)).ToFrozenDictionary(c => c.EnglishName.ToLowerInvariant(), c => c.Name);
 
-    [SlashCommand("suggest", "Suggest a new word or phrase to be detected as profanity.")]
+    [SlashCommand("suggest", "Suggest a new trigger (word or phrase) to be detected as profanity.")]
     public async Task ProfanitySuggestCommand(string trigger, string comment, string language)
     {
         bool ephemeral = Context.IsNotDm();
@@ -45,7 +45,7 @@ public sealed partial class ProfanityGroup
         var rejection = await _db.RejectedProfanitySuggestions.FirstOrDefaultAsync(r => r.Trigger == trigger);
         if (rejection != null)
         {
-            await FollowupAsync($"❌ {trigger} has already been suggested and rejected as a triggerword, reason: {rejection.Reason}.", ephemeral: ephemeral);
+            await FollowupAsync($"❌ {trigger} has already been suggested and rejected: {rejection.Reason}.", ephemeral: ephemeral);
             return;
         }
 

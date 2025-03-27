@@ -1,5 +1,6 @@
 ﻿using Discord.Interactions;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
+using OpenShock.DiscordBot.Utils;
 
 namespace OpenShock.DiscordBot.Commands.ProfanityAdmin;
 
@@ -22,6 +23,18 @@ public sealed partial class ProfanityAdminGroup
             if (suggestion == null)
             {
                 await FollowupAsync("❌ Suggestion not found or already reviewed.", ephemeral: true);
+                return;
+            }
+
+            if (matchwholeword && suggestion.Trigger.Any(char.IsWhiteSpace))
+            {
+                await FollowupAsync($"❌ Trigger cannot have whitespaces if it should match a whole word.", ephemeral: true);
+                return;
+            }
+
+            if (validationRegex != null && !RegexUtils.IsValidRegexPattern(validationRegex))
+            {
+                await FollowupAsync($"❌ Validation regex is not a valid regex.", ephemeral: true);
                 return;
             }
 

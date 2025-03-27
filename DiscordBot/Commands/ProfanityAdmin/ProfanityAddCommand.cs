@@ -3,6 +3,7 @@ using Discord.Interactions;
 using Microsoft.EntityFrameworkCore;
 using OpenShock.DiscordBot.Commands.Profanity;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
+using OpenShock.DiscordBot.Utils;
 
 namespace OpenShock.DiscordBot.Commands.ProfanityAdmin;
 
@@ -12,8 +13,8 @@ public sealed partial class ProfanityAdminGroup
     public async Task ProfanityAddCommand(
     string trigger,
     string language,
-    float? severity = 0.5f,
-    bool? matchwholeword = true,
+    float severity = 0.5f,
+    bool matchwholeword = true,
     string? validationRegex = null,
     string? category = null,
     string? comment = null)
@@ -27,6 +28,18 @@ public sealed partial class ProfanityAdminGroup
         }
 
         trigger = trigger.Normalize(NormalizationForm.FormKC).Trim().ToLowerInvariant();
+
+        if (matchwholeword && trigger.Any(char.IsWhiteSpace))
+        {
+            await FollowupAsync($"❌ Trigger cannot have whitespaces if it should match a whole word.", ephemeral: true);
+            return;
+        }
+
+        if (validationRegex != null && !RegexUtils.IsValidRegexPattern(validationRegex))
+        {
+            await FollowupAsync($"❌ Validation regex is not a valid regex.", ephemeral: true);
+            return;
+        }
 
         if (!ProfanityGroup.RelevantCultures.TryGetValue(language.Trim().ToLower(), out var languageCode))
         {
@@ -44,8 +57,8 @@ public sealed partial class ProfanityAdminGroup
         {
             Trigger = trigger,
             LanguageCode = languageCode,
-            SeverityScore = severity ?? 0.5f,
-            MatchWholeWord = matchwholeword ?? true,
+            SeverityScore = severity,
+            MatchWholeWord = matchwholeword,
             ValidationRegex = validationRegex,
             Category = category,
             Comment = comment,

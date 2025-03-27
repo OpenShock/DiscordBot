@@ -4,7 +4,7 @@ public partial class ProfanityRule
 {
     public long Id { get; set; }
 
-    public string Trigger { get; set; } = null!;
+    public required string Trigger { get; set; }
 
     public float SeverityScore { get; set; }
 
@@ -14,7 +14,7 @@ public partial class ProfanityRule
 
     public string? ValidationRegex { get; set; }
 
-    public string LanguageCode { get; set; } = null!;
+    public required string LanguageCode { get; set; }
 
     public string? Category { get; set; }
 

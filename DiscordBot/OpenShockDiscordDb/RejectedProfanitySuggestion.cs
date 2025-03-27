@@ -4,11 +4,11 @@ public partial class RejectedProfanitySuggestion
 {
     public long Id { get; set; }
 
-    public string Trigger { get; set; } = null!;
+    public required string Trigger { get; set; }
 
-    public string Reason { get; set; } = null!;
+    public required string Reason { get; set; }
 
-    public string LanguageCode { get; set; } = null!;
+    public required string LanguageCode { get; set; }
 
     public ulong SuggestedByUserId { get; set; }
 
