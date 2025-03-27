@@ -26,6 +26,15 @@ public sealed partial class ProfanityAdminGroup
                 return;
             }
 
+            if (_db.ProfanityRules.Any(r => r.Trigger == suggestion.Trigger))
+            {
+                _db.Remove(suggestion);
+                await _db.SaveChangesAsync();
+                
+                await FollowupAsync("❌ There already exists a rule for this, removed suggestion.", ephemeral: true);
+                return;
+            }
+
             if (matchwholeword && suggestion.Trigger.Any(char.IsWhiteSpace))
             {
                 await FollowupAsync($"❌ Trigger cannot have whitespaces if it should match a whole word.", ephemeral: true);
@@ -53,6 +62,8 @@ public sealed partial class ProfanityAdminGroup
             };
 
             _db.ProfanityRules.Add(rule);
+            _db.Remove(suggestion);
+            
             await _db.SaveChangesAsync();
 
             await FollowupAsync($"✅ Suggestion accepted and rule created for `{rule.Trigger}`.", ephemeral: true);
