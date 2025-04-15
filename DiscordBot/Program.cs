@@ -92,6 +92,11 @@ builder.ConfigureServices((context, services) =>
         new InteractionService(x.GetRequiredService<DiscordSocketClient>()));
     services.AddSingleton<InteractionHandler>();
 
+    services.AddHttpClient("OpenShockBackend", httpClient =>
+    {
+        httpClient.DefaultRequestHeaders.Add("User-Agent", "OpenShockDiscordBot/1.0");
+        httpClient.BaseAddress = new Uri("https://api.openshock.app/");
+    });
     services.AddHostedService<StatusTask>();
 });
 

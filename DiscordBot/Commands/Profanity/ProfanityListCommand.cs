@@ -3,23 +3,17 @@ using Discord.Interactions;
 using Microsoft.EntityFrameworkCore;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
 
-namespace OpenShock.DiscordBot.Commands.ProfanityAdmin;
+namespace OpenShock.DiscordBot.Commands.Profanity;
 
-public sealed partial class ProfanityAdminGroup
+public sealed partial class ProfanityGroup
 {
-    [SlashCommand("list", "List current profanity rules (admin only).")]
+    [SlashCommand("list", "List current profanity rules.")]
     public async Task ProfanityListCommand()
     {
         await DeferAsync(ephemeral: true);
 
-        if (!_db.Administrators.Any(a => a.DiscordId == Context.User.Id))
-        {
-            await FollowupAsync("You are not an administrator.", ephemeral: true);
-            return;
-        }
-
-        var rules = await _db.ProfanityRules
-            .OrderByDescending(r => r.CreatedAt)
+        var rules = await Queryable
+            .OrderByDescending<ProfanityRule, DateTimeOffset>(_db.ProfanityRules, r => r.CreatedAt)
             .Take(10)
             .ToListAsync();
 

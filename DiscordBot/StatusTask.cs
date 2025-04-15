@@ -14,14 +14,15 @@ public class StatusTask : IHostedService, IDisposable
 {
     private readonly ILogger<StatusTask> _logger;
     private readonly DiscordSocketClient _client;
-    private static readonly HttpClient HttpClient = new();
+    private readonly IHttpClientFactory _httpClientFactory;
 
     private Timer? _timer;
 
-    public StatusTask(ILogger<StatusTask> logger, DiscordSocketClient client)
+    public StatusTask(ILogger<StatusTask> logger, DiscordSocketClient client, IHttpClientFactory httpClientFactory)
     {
         _logger = logger;
         _client = client;
+        _httpClientFactory = httpClientFactory;
     }
 
     private async void UpdateStatusLoop(object? sender, ElapsedEventArgs elapsedEventArgs)
@@ -39,8 +40,9 @@ public class StatusTask : IHostedService, IDisposable
 
     private async Task Update()
     {
+        var httpClient = _httpClientFactory.CreateClient("OpenShockBackend");
         var response =
-            await HttpClient.GetFromJsonAsync<BaseResponse<StatsResponse>>("https://api.openshock.app/1/public/stats");
+            await httpClient.GetFromJsonAsync<BaseResponse<StatsResponse>>("1/public/stats");
         if (response == null) return;
 
         await _client.SetActivityAsync(
