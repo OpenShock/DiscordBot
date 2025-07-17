@@ -66,7 +66,7 @@ public sealed partial class SetupCommands : InteractionModuleBase<SocketInteract
         await FollowupAsync(message.Item1, components: message.Item2);
     }
 
-    private (string, MessageComponent) Page(int page, IReadOnlyCollection<ResponseDeviceWithShockers> ownShockers,
+    private (string, MessageComponent) Page(int page, IReadOnlyCollection<ResponseHubWithShockers> ownShockers,
         List<UsersShocker> activeShockers)
     {
         var device = ownShockers.ElementAtOrDefault(page);
