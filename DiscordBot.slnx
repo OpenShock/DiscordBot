@@ -1,0 +1,4 @@
+﻿<Solution>
+  <Project Path="DiscordBot\DiscordBot.csproj" Type="Classic C#" />
+  <Project Path="MigrationHelper\MigrationHelper.csproj" Type="Classic C#" />
+</Solution>

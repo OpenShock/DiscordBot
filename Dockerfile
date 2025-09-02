@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build
 WORKDIR /src
-COPY *.sln .
+COPY *.slnx .
 COPY DiscordBot/*.csproj ./DiscordBot/
 COPY MigrationHelper/*.csproj ./MigrationHelper/
 RUN dotnet restore
