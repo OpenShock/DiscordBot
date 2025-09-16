@@ -78,7 +78,7 @@ builder.ConfigureServices((context, services) =>
         }
     });
 
-    services.AddSingleton<IUserRepository, UserRepository>();
+    services.AddScoped<IUserRepository, UserRepository>();
     services.AddSingleton<IProfanityDetector, ProfanityDetector>();
     services.AddSingleton<IOpenShockBackendService, OpenShockBackendService>();
     services.AddSingleton<MessageHandler>();
