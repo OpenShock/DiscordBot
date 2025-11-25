@@ -8,7 +8,6 @@ using OneOf;
 using OneOf.Types;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
 using OpenShock.DiscordBot.Utils;
-using OpenShock.SDK.CSharp;
 using OpenShock.SDK.CSharp.Errors;
 using OpenShock.SDK.CSharp.Models;
 

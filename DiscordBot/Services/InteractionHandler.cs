@@ -3,7 +3,6 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.Logging;
 using OpenShock.DiscordBot.Utils;
-using Serilog;
 
 namespace OpenShock.DiscordBot.Services;
 

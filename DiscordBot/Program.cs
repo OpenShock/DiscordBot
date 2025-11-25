@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Discord;
+﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +12,7 @@ using OpenShock.DiscordBot.Services.UserRepository;
 using OpenShock.DiscordBot.Utils;
 using Serilog;
 using System.Reflection;
+using OpenShock.DiscordBot.MessageHandler;
 using OpenShock.DiscordBot.Services.ProfanityDetector;
 
 try

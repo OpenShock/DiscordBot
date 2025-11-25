@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using Discord.Interactions;
 using Microsoft.EntityFrameworkCore;
-using OpenShock.DiscordBot.OpenShockDiscordDb;
 
 namespace OpenShock.DiscordBot.Commands.ProfanityAdmin;
 

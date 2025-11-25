@@ -30,7 +30,7 @@ public sealed partial class SetupCommands
             ApiToken = user.ApiKey,
             ApiServer = user.ApiServer
         };
-        await Context.Interaction.RespondWithModalAsync<SetupModal>(SetupModalId, previousData);
+        await Context.Interaction.RespondWithModalAsync(SetupModalId, previousData);
     }
     
     // Responds to the modal.

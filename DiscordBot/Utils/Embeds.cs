@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-using Discord;
-using OpenShock.DiscordBot.Commands;
+﻿using Discord;
 
 namespace OpenShock.DiscordBot.Utils;
 

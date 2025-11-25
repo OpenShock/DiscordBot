@@ -1,5 +1,4 @@
 ﻿using Discord.Interactions;
-using Discord.WebSocket;
 
 namespace OpenShock.DiscordBot.Commands.Admin;
 

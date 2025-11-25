@@ -1,8 +1,6 @@
-﻿using Discord;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
 using OpenShock.DiscordBot.Utils;
-using OpenShock.SDK.CSharp;
 using OpenShock.SDK.CSharp.Models;
 
 namespace OpenShock.DiscordBot.Services;

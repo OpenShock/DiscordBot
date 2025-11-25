@@ -5,10 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
 using OpenShock.DiscordBot.Services;
 using OpenShock.DiscordBot.Services.ProfanityDetector;
-using OpenShock.DiscordBot.Utils;
 using OpenShock.SDK.CSharp.Models;
 
-namespace OpenShock.DiscordBot;
+namespace OpenShock.DiscordBot.MessageHandler;
 
 public sealed partial class MessageHandler
 {
