@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace OpenShock.DiscordBot.OpenShockDiscordDb;
+﻿namespace OpenShock.DiscordBot.OpenShockDiscordDb;
 
 public partial class BotAdmin
 {

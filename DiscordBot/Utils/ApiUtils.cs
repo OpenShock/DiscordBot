@@ -1,5 +1,4 @@
-﻿using Discord;
-using OpenShock.DiscordBot.OpenShockDiscordDb;
+﻿using OpenShock.DiscordBot.OpenShockDiscordDb;
 using OpenShock.SDK.CSharp;
 
 namespace OpenShock.DiscordBot.Utils;

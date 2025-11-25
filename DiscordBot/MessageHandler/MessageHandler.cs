@@ -5,10 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
 using OpenShock.DiscordBot.Services;
 using OpenShock.DiscordBot.Services.ProfanityDetector;
-using OpenShock.DiscordBot.Utils;
 using OpenShock.SDK.CSharp.Models;
 
-namespace OpenShock.DiscordBot;
+namespace OpenShock.DiscordBot.MessageHandler;
 
 public sealed partial class MessageHandler
 {
@@ -77,9 +76,9 @@ public sealed partial class MessageHandler
 
             // Send reaction and trigger shock
             await Task.WhenAll([
-                    message.AddReactionAsync(new Emoji("⚡")),
-                    ShockUserAsync(scope, authorDiscordId, intensityPercent)
-                ]);
+                message.AddReactionAsync(new Emoji("⚡")),
+                ShockUserAsync(scope, authorDiscordId, intensityPercent)
+            ]);
         }
     }
 }

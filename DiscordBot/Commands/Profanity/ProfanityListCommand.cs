@@ -1,7 +1,6 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Microsoft.EntityFrameworkCore;
-using OpenShock.DiscordBot.OpenShockDiscordDb;
 
 namespace OpenShock.DiscordBot.Commands.Profanity;
 
@@ -12,8 +11,8 @@ public sealed partial class ProfanityGroup
     {
         await DeferAsync(ephemeral: true);
 
-        var rules = await Queryable
-            .OrderByDescending<ProfanityRule, DateTimeOffset>(_db.ProfanityRules, r => r.CreatedAt)
+        var rules = await _db.ProfanityRules
+            .OrderByDescending(r => r.CreatedAt)
             .Take(10)
             .ToListAsync();
 
