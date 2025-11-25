@@ -75,10 +75,10 @@ public sealed partial class MessageHandler
             if (isInBotChannel) await message.Channel.SendMessageAsync($"Profanity detected! {count} bad {(count > 1 ? "words" : "word")}, shocking at {intensityPercent:F0}%");
 
             // Send reaction and trigger shock
-            await Task.WhenAll([
-                    message.AddReactionAsync(new Emoji("⚡")),
-                    ShockUserAsync(scope, authorDiscordId, intensityPercent)
-                ]);
+            await Task.WhenAll(
+                message.AddReactionAsync(new Emoji("⚡")),
+                ShockUserAsync(scope, authorDiscordId, intensityPercent)
+                );
         }
     }
 }
