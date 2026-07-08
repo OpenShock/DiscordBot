@@ -174,5 +174,7 @@ static async Task ReadyAsync(BaseSocketClient client, InteractionService interac
         new Game($"electricity flow, v{Assembly.GetEntryAssembly()?.GetName().Version?.ToString()}",
             ActivityType.Watching));
 
-    await interactionService.RegisterCommandsGloballyAsync();
+    // deleteMissing: false so the bulk update doesn't try to remove the Activities "Entry Point"
+    // command that Discord manages (removing it in a bulk overwrite fails with error 50240).
+    await interactionService.RegisterCommandsGloballyAsync(deleteMissing: false);
 }
