@@ -1,4 +1,6 @@
-﻿<Solution>
+<Solution>
+  <Project Path="OpenShock.DiscordBot.Shared\OpenShock.DiscordBot.Shared.csproj" Type="Classic C#" />
   <Project Path="DiscordBot\DiscordBot.csproj" Type="Classic C#" />
   <Project Path="MigrationHelper\MigrationHelper.csproj" Type="Classic C#" />
+  <Project Path="OpenShock.Activity.Api\OpenShock.Activity.Api.csproj" Type="Classic C#" />
 </Solution>

@@ -48,6 +48,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\OpenShock.DiscordBot.Shared\OpenShock.DiscordBot.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.5" />
       <None Remove="appsettings.json" />
       <Content Include="appsettings.json">

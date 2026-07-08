@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
@@ -11,13 +12,15 @@ using OpenShock.DiscordBot.OpenShockDiscordDb;
 namespace OpenShock.DiscordBot.Migrations
 {
     [DbContext(typeof(OpenShockDiscordContext))]
-    partial class OpenShockDiscordContextModelSnapshot : ModelSnapshot
+    [Migration("20260708201654_AddRoomConsent")]
+    partial class AddRoomConsent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.3")
+                .HasAnnotation("ProductVersion", "10.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -206,6 +209,12 @@ namespace OpenShock.DiscordBot.Migrations
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("discord_id");
 
+                    b.Property<bool>("AllowRoomShocks")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasColumnName("allow_room_shocks")
+                        .HasDefaultValueSql("false");
+
                     b.Property<string>("ApiKey")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -233,6 +242,18 @@ namespace OpenShock.DiscordBot.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("profanity_shocking")
                         .HasDefaultValueSql("false");
+
+                    b.Property<int>("RoomMaxDurationMs")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(3000)
+                        .HasColumnName("room_max_duration_ms");
+
+                    b.Property<byte>("RoomMaxIntensity")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint")
+                        .HasDefaultValue((byte)30)
+                        .HasColumnName("room_max_intensity");
 
                     b.HasKey("DiscordId")
                         .HasName("users_pkey");

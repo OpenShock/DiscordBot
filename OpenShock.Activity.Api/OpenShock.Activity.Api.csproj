@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Company>OpenShock</Company>
+        <Product>DiscordBot</Product>
+        <RootNamespace>OpenShock.Activity.Api</RootNamespace>
+        <AssemblyName>OpenShock.Activity.Api</AssemblyName>
+        <UserSecretsId>05918ba7-2547-4661-9c92-1172d1441505</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\OpenShock.DiscordBot.Shared\OpenShock.DiscordBot.Shared.csproj" />
+    </ItemGroup>
+
+</Project>
