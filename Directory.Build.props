@@ -1,0 +1,15 @@
+<Project>
+
+  <!-- Common MSBuild properties shared by every project in the solution. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Company>OpenShock</Company>
+    <Product>DiscordBot</Product>
+    <NeutralLanguage>en-001</NeutralLanguage>
+    <!-- Shared secrets store: the bot and the Activity API read the same user-secrets (DB conn, etc.). -->
+    <UserSecretsId>05918ba7-2547-4661-9c92-1172d1441505</UserSecretsId>
+  </PropertyGroup>
+
+</Project>
