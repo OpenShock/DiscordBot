@@ -94,13 +94,33 @@ dotnet run --project OpenShock.Activity.Api          # http://localhost:5199 (se
 cd activity && pnpm install && pnpm dev              # http://localhost:5173
 ```
 
-The Discord Embedded App SDK only works **inside Discord**. To test the real flow, point the two URL
-mappings at a tunnel (e.g. `cloudflared tunnel --url`) to your local frontend/API, then launch the
-Activity from a Discord voice channel.
-
 For API-only testing without Discord, the Development environment exposes `POST /dev/token
 { "discordId": "…", "name": "…" }` which mints a session JWT you can use as a Bearer token against the
 REST endpoints.
+
+### Testing the real Activity inside Discord (URL override)
+
+The Embedded App SDK only works **inside Discord**, and the iframe's CSP won't let the browser call
+`localhost` directly. Discord's per-user **Activity URL override** only replaces the root (`/`) target —
+sub-path mappings like `/api` still resolve to your *prod* host. So for local debugging, collapse
+everything onto **one origin**: the Vite dev server serves the frontend **and** proxies `/api` (and the
+SignalR WebSocket) to the local API. Only the root override is needed — no `/api` mapping locally.
+
+The proxy is already configured in `vite.config.ts` (`/api` → `VITE_API_PROXY_TARGET`, default
+`http://localhost:5199`, `ws: true`, prefix stripped so it matches the API's root routes).
+
+```bash
+# 1. API
+dotnet run --project OpenShock.Activity.Api           # ASPNETCORE_URLS=http://localhost:5199
+# 2. Frontend (serves app + proxies /api to the API)
+cd activity && pnpm dev                                # http://localhost:5173
+# 3. Expose Vite to Discord over HTTPS
+cloudflared tunnel --url http://localhost:5173         # copy the https://<random>.trycloudflare.com URL
+```
+
+Then in Discord → your app → **Activities → set the URL override** to the tunnel URL and launch the
+Activity from a voice channel. `server.allowedHosts` is already `true` so Vite accepts the tunnel host.
+(HMR over the tunnel can be flaky — a manual refresh always works.)
 
 ## Endpoints (served at root; browser calls them under `/api`)
 
