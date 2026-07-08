@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using OpenShock.DiscordBot;
 
 namespace OpenShock.Activity.Api.Config;
 
@@ -7,7 +6,6 @@ public sealed class ActivityApiConfig
 {
     public required DiscordConfig Discord { get; init; }
     public required JwtConfig Jwt { get; init; }
-    public required DbConfig Db { get; init; }
 
     /// <summary>Origins allowed by CORS. Only used for local development; in production the Discord proxy makes calls same-origin.</summary>
     public string[] CorsOrigins { get; init; } = [];

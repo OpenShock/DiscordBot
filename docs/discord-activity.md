@@ -29,15 +29,16 @@ Discord client (voice channel)
 
 ## Configuration (API)
 
-Bound from the `Activity` config section. Non-secret defaults live in `appsettings.json`; secrets come
-from user-secrets (local) or env vars (`Activity__Discord__ClientSecret`, etc.) in production.
+Bound from the `Activity` config section, plus a shared top-level `Db` section. Non-secret defaults
+live in `appsettings.json`; secrets come from user-secrets (local) or env vars
+(`Activity__Discord__ClientSecret`, `Db__Conn`, …) in production.
 
 | Key | Notes |
 | --- | --- |
 | `Activity:Discord:ClientId` | `1096380937496969326` (public). |
 | `Activity:Discord:ClientSecret` | From the Discord Dev Portal → OAuth2. **Secret.** |
 | `Activity:Jwt:Key` | HMAC signing key for our session JWT (≥ 32 bytes). **Secret.** |
-| `Activity:Db:Conn` | Postgres connection string (same DB as the bot). **Secret.** |
+| `Db:Conn` | Postgres connection string. **Shared with the bot** — one top-level section, so `Db__Conn` is set once and both processes read it (and the shared user-secrets store holds a single entry). **Secret.** |
 | `Activity:CorsOrigins` | Dev only — allowed browser origins for `pnpm dev`. |
 
 ## Discord Developer Portal
@@ -71,7 +72,7 @@ The consent columns (`allow_room_shocks`, `room_max_intensity`, `room_max_durati
 dotnet ef database update --project OpenShock.DiscordBot.Shared --startup-project MigrationHelper
 ```
 
-(The bot also auto-applies pending migrations on startup unless `bot:Db:SkipMigration` is set.)
+(The bot also auto-applies pending migrations on startup unless `Db:SkipMigration` is set.)
 
 ## Consent model
 

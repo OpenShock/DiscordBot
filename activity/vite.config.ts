@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 
 // Where the local OpenShock.Activity.Api is listening.
-const apiTarget = process.env.VITE_API_PROXY_TARGET ?? 'http://localhost:5199';
+const apiTarget = process.env.VITE_API_PROXY_TARGET ?? 'http://localhost:5000';
 
 // The API serves its routes at root; the browser calls them under "/api" (the same prefix Discord
 // strips in production). Locally we replicate that by stripping "/api" here and proxying to the API.

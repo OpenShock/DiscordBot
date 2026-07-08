@@ -110,7 +110,8 @@ spec:
             - name: Activity__Jwt__Key
               valueFrom:
                 secretKeyRef: { name: activity-api, key: jwt-key }
-            - name: Activity__Db__Conn
+            # Shared top-level "Db" section — the same Db__Conn the bot deployment reads.
+            - name: Db__Conn
               valueFrom:
                 secretKeyRef: { name: activity-api, key: db-conn }
 ---

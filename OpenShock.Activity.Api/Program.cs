@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using OpenShock.DiscordBot;
 using OpenShock.Activity.Api;
 using OpenShock.Activity.Api.Auth;
 using OpenShock.Activity.Api.Config;
@@ -17,12 +18,16 @@ builder.Configuration.AddUserSecrets(typeof(Program).Assembly, optional: true);
 
 var config = builder.Configuration.GetSection("Activity").Get<ActivityApiConfig>()
              ?? throw new InvalidOperationException("Could not load the 'Activity' configuration section.");
+// Shared top-level "Db" section (same section the Discord bot reads).
+var dbConfig = builder.Configuration.GetSection("Db").Get<DbConfig>()
+               ?? throw new InvalidOperationException("Could not load the 'Db' configuration section.");
 builder.Services.AddSingleton(config);
+builder.Services.AddSingleton(dbConfig);
 
 builder.Services.AddDbContext<OpenShockDiscordContext>(options =>
 {
-    options.UseNpgsql(config.Db.Conn);
-    if (config.Db.Debug)
+    options.UseNpgsql(dbConfig.Conn);
+    if (dbConfig.Debug)
     {
         options.EnableDetailedErrors();
         options.EnableSensitiveDataLogging();
