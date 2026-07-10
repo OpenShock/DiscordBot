@@ -1,0 +1,16 @@
+{
+  "$schema": "https://shadcn-svelte.com/schema.json",
+  "tailwind": {
+    "css": "src/app.css",
+    "baseColor": "neutral"
+  },
+  "aliases": {
+    "components": "@openshock/svelte-core/components",
+    "utils": "@openshock/svelte-core/utils/shadcn",
+    "ui": "@openshock/svelte-core/components/ui",
+    "hooks": "@openshock/svelte-core/hooks",
+    "lib": "@openshock/svelte-core"
+  },
+  "typescript": true,
+  "registry": "https://shadcn-svelte.com/registry"
+}

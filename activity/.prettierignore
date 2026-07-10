@@ -1,0 +1,21 @@
+.DS_Store
+node_modules
+/build
+/.svelte-kit
+/package
+/static
+
+# Workspace packages (e.g. the svelte-core submodule) own their own formatting
+/packages
+
+.env
+.env.*
+!.env.example
+
+# Generated OpenAPI spec snapshot (written by scripts/regenerate-api.js)
+openapi.json
+
+# Lockfiles
+pnpm-lock.yaml
+package-lock.json
+yarn.lock

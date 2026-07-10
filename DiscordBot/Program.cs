@@ -48,18 +48,21 @@ builder.UseContentRoot(Directory.GetCurrentDirectory())
 
 builder.ConfigureServices((context, services) =>
 {
-    var botConfig = context.Configuration.GetSection("bot");
-    var discordBotConfig = botConfig.Get<DiscordBotConfig>() ??
+    var discordBotConfig = context.Configuration.GetSection("bot").Get<DiscordBotConfig>() ??
                            throw new Exception("Could not load bot config");
+    // Shared top-level "Db" section (same section the Activity API reads).
+    var dbConfig = context.Configuration.GetSection("Db").Get<DbConfig>() ??
+                   throw new Exception("Could not load Db config");
 
     services.AddSingleton(discordBotConfig);
+    services.AddSingleton(dbConfig);
 
     services.AddDbContextPool<OpenShockDiscordContext>(optionsBuilder =>
     {
-        optionsBuilder.UseNpgsql(discordBotConfig.Db.Conn);
+        optionsBuilder.UseNpgsql(dbConfig.Conn);
 
         // ReSharper disable once InvertIf
-        if (discordBotConfig.Db.Debug)
+        if (dbConfig.Debug)
         {
             optionsBuilder.EnableDetailedErrors();
             optionsBuilder.EnableSensitiveDataLogging();
@@ -68,10 +71,10 @@ builder.ConfigureServices((context, services) =>
 
     services.AddPooledDbContextFactory<OpenShockDiscordContext>(optionsBuilder =>
     {
-        optionsBuilder.UseNpgsql(discordBotConfig.Db.Conn);
-        
+        optionsBuilder.UseNpgsql(dbConfig.Conn);
+
         // ReSharper disable once InvertIf
-        if (discordBotConfig.Db.Debug)
+        if (dbConfig.Debug)
         {
             optionsBuilder.EnableDetailedErrors();
             optionsBuilder.EnableSensitiveDataLogging();
@@ -106,10 +109,11 @@ builder.ConfigureServices((context, services) =>
     Log.Information("Starting OpenShock Discord Bot version {Version}", Assembly.GetEntryAssembly()?.GetName().Version?.ToString());
 
     var config = host.Services.GetRequiredService<DiscordBotConfig>();
+    var dbConfig = host.Services.GetRequiredService<DbConfig>();
 
     // <---- DATABASE MIGRATION ---->
 
-    if (!config.Db.SkipMigration)
+    if (!dbConfig.SkipMigration)
     {
         Log.Information("Running database migrations...");
 

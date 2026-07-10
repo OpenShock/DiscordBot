@@ -60,6 +60,15 @@ public partial class OpenShockDiscordContext : DbContext
             entity.Property(e => e.ProfanityShocking)
                 .HasDefaultValueSql("false")
                 .HasColumnName("profanity_shocking");
+            entity.Property(e => e.AllowRoomShocks)
+                .HasDefaultValueSql("false")
+                .HasColumnName("allow_room_shocks");
+            entity.Property(e => e.RoomMaxIntensity)
+                .HasDefaultValue((byte)30)
+                .HasColumnName("room_max_intensity");
+            entity.Property(e => e.RoomMaxDurationMs)
+                .HasDefaultValue(3000)
+                .HasColumnName("room_max_duration_ms");
             entity.Property(e => e.OpenshockId).HasColumnName("openshock_id");
         });
 

@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <RootNamespace>OpenShock.Activity.Api</RootNamespace>
+        <AssemblyName>OpenShock.Activity.Api</AssemblyName>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+        <PackageReference Include="Microsoft.OpenApi" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" />
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" />
+        <PackageReference Include="StackExchange.Redis" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Serilog, configured from the "Serilog" config section like the bot and main API. -->
+        <PackageReference Include="Serilog.AspNetCore" />
+        <PackageReference Include="Serilog.Extensions.Hosting" />
+        <PackageReference Include="Serilog.Settings.Configuration" />
+        <PackageReference Include="Serilog.Sinks.Console" />
+        <PackageReference Include="Serilog.Sinks.OpenTelemetry" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\OpenShock.DiscordBot.Shared\OpenShock.DiscordBot.Shared.csproj" />
+    </ItemGroup>
+
+</Project>

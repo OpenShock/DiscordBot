@@ -1,0 +1,918 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "OpenShock.Activity.Api | v1",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/auth/token": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenShockProblem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenShockProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dev/token": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DevTokenRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DevTokenRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DevTokenRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DevTokenResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/control": {
+      "post": {
+        "tags": [
+          "Control"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ControlRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ControlRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ControlRequestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenShockProblem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenShockProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenShockProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenShockProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenShockProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/shockers": {
+      "get": {
+        "tags": [
+          "Shocker"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ShockerDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenShockProblem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenShockProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Shocker"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetShockersRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetShockersRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetShockersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenShockProblem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenShockProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/me": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/link": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LinkRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LinkRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LinkRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenShockProblem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenShockProblem"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenShockProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/consent": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsentRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsentRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenShockProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/whitelist": {
+      "get": {
+        "tags": [
+          "Whitelist"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WhitelistEntryDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/whitelist/{friendId}": {
+      "post": {
+        "tags": [
+          "Whitelist"
+        ],
+        "parameters": [
+          {
+            "name": "friendId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenShockProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Whitelist"
+        ],
+        "parameters": [
+          {
+            "name": "friendId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuthUserDto": {
+        "required": [
+          "discordId",
+          "name",
+          "avatar"
+        ],
+        "type": "object",
+        "properties": {
+          "discordId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "ConsentRequest": {
+        "required": [
+          "allowRoomShocks",
+          "roomMaxIntensity",
+          "roomMaxDurationMs"
+        ],
+        "type": "object",
+        "properties": {
+          "allowRoomShocks": {
+            "type": "boolean"
+          },
+          "roomMaxIntensity": {
+            "type": "integer",
+            "format": "uint8"
+          },
+          "roomMaxDurationMs": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ControlRequestDto": {
+        "required": [
+          "targetDiscordId",
+          "instanceId",
+          "intensity",
+          "duration",
+          "type",
+          "mode"
+        ],
+        "type": "object",
+        "properties": {
+          "targetDiscordId": {
+            "type": "string"
+          },
+          "instanceId": {
+            "type": "string"
+          },
+          "intensity": {
+            "type": "integer",
+            "format": "uint8"
+          },
+          "duration": {
+            "type": "number",
+            "format": "float"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ControlType"
+          },
+          "mode": {
+            "$ref": "#/components/schemas/ShockMode"
+          }
+        }
+      },
+      "ControlResponseDto": {
+        "required": [
+          "intensity",
+          "durationSeconds"
+        ],
+        "type": "object",
+        "properties": {
+          "intensity": {
+            "type": "integer",
+            "format": "uint8"
+          },
+          "durationSeconds": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      },
+      "ControlType": {
+        "enum": [
+          "Stop",
+          "Shock",
+          "Vibrate",
+          "Sound"
+        ],
+        "type": "string"
+      },
+      "DevTokenRequest": {
+        "required": [
+          "discordId",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "discordId": {
+            "type": "string"
+          },
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "DevTokenResponse": {
+        "required": [
+          "jwt"
+        ],
+        "type": "object",
+        "properties": {
+          "jwt": {
+            "type": "string"
+          }
+        }
+      },
+      "LinkRequest": {
+        "required": [
+          "apiToken",
+          "apiServer"
+        ],
+        "type": "object",
+        "properties": {
+          "apiToken": {
+            "type": "string"
+          },
+          "apiServer": {
+            "type": "string"
+          }
+        }
+      },
+      "LinkResponse": {
+        "required": [
+          "openShockName"
+        ],
+        "type": "object",
+        "properties": {
+          "openShockName": {
+            "type": "string"
+          }
+        }
+      },
+      "MeResponse": {
+        "required": [
+          "linked",
+          "allowRoomShocks",
+          "roomMaxIntensity",
+          "roomMaxDurationMs"
+        ],
+        "type": "object",
+        "properties": {
+          "linked": {
+            "type": "boolean"
+          },
+          "allowRoomShocks": {
+            "type": "boolean"
+          },
+          "roomMaxIntensity": {
+            "type": "integer",
+            "format": "uint8"
+          },
+          "roomMaxDurationMs": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "OpenShockProblem": {
+        "required": [
+          "type",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "detail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "instance": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "requestId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "detail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "instance": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "SetShockersRequest": {
+        "required": [
+          "enabledIds"
+        ],
+        "type": "object",
+        "properties": {
+          "enabledIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "ShockerDto": {
+        "required": [
+          "id",
+          "name",
+          "hubName",
+          "enabled"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "hubName": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ShockMode": {
+        "enum": [
+          "Random",
+          "All"
+        ],
+        "type": "string"
+      },
+      "TokenRequest": {
+        "required": [
+          "code"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          }
+        }
+      },
+      "TokenResponse": {
+        "required": [
+          "discordAccessToken",
+          "jwt",
+          "user"
+        ],
+        "type": "object",
+        "properties": {
+          "discordAccessToken": {
+            "type": "string"
+          },
+          "jwt": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/AuthUserDto"
+          }
+        }
+      },
+      "WhitelistEntryDto": {
+        "required": [
+          "discordId"
+        ],
+        "type": "object",
+        "properties": {
+          "discordId": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "Control"
+    },
+    {
+      "name": "Shocker"
+    },
+    {
+      "name": "User"
+    },
+    {
+      "name": "Whitelist"
+    }
+  ]
+}

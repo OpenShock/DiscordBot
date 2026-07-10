@@ -1,0 +1,3 @@
+[submodule "activity/packages/svelte-core"]
+	path = activity/packages/svelte-core
+	url = git@github.com:OpenShock/svelte-core.git

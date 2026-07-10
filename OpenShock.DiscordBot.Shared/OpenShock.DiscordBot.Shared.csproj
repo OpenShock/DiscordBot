@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
+        <RootNamespace>OpenShock.DiscordBot</RootNamespace>
+        <AssemblyName>OpenShock.DiscordBot.Shared</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>
@@ -11,15 +12,10 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Microsoft.Extensions.Hosting" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\OpenShock.DiscordBot.Shared\OpenShock.DiscordBot.Shared.csproj" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+        <PackageReference Include="OneOf" />
+        <PackageReference Include="OpenShock.SDK.CSharp" />
     </ItemGroup>
 
 </Project>

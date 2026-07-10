@@ -1,0 +1,33 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import '@openshock/svelte-core/theme.css';
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+/* Themed scrollbars — thin, rounded, floating thumb built from design tokens so it matches light and
+ * dark. The transparent border + padding-box clip insets the thumb so it reads as a pill, not a slab. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklch, var(--muted-foreground) 35%, transparent) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: color-mix(in oklch, var(--muted-foreground) 35%, transparent);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: color-mix(in oklch, var(--muted-foreground) 55%, transparent);
+}
