@@ -1,6 +1,6 @@
-# Build from the repo root:  docker build -f OpenShock.Activity.Api/Dockerfile -t openshock/activity-api .
+# syntax = devthefuture/dockerfile-x
+
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-WORKDIR /src
 
 # Copy only project files first for layer-cached restore.
 COPY OpenShock.DiscordBot.Shared/OpenShock.DiscordBot.Shared.csproj OpenShock.DiscordBot.Shared/
@@ -12,9 +12,15 @@ COPY OpenShock.DiscordBot.Shared/ OpenShock.DiscordBot.Shared/
 COPY OpenShock.Activity.Api/ OpenShock.Activity.Api/
 RUN dotnet publish OpenShock.Activity.Api/OpenShock.Activity.Api.csproj -c Release -o /app --no-restore
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+# final is the final runtime stage for running the app
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS final-api
 WORKDIR /app
-COPY --from=build /app .
-ENV ASPNETCORE_URLS=http://0.0.0.0:8080
-EXPOSE 8080
-ENTRYPOINT ["dotnet", "OpenShock.Activity.Api.dll"]
+
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+RUN apk update && apk add --no-cache openssl
+
+COPY --link --from=build-api /app .
+COPY docker/appsettings.Container.json /app/appsettings.Container.json
+
+ENTRYPOINT ["/bin/ash", "/entrypoint.sh", "OpenShock.Activity.Api.dll"]

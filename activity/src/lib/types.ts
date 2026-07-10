@@ -1,36 +1,17 @@
-// Shared shapes mirroring the OpenShock.Activity.Api DTOs. All Discord IDs are strings (they are
-// 64-bit snowflakes that exceed JS's safe-integer range — the API serializes them as strings).
+// REST DTOs are generated from the OpenShock.Activity.Api OpenAPI document (see src/lib/api/generated).
+// They're re-exported here under the names the app uses so components import from one place.
+export type {
+  AuthUserDto as AuthUser,
+  ControlType,
+  LinkResponse,
+  MeResponse,
+  ShockMode,
+  ShockerDto,
+  WhitelistEntryDto as WhitelistEntry,
+} from '$lib/api/generated';
 
-export type ControlType = 'Shock' | 'Vibrate' | 'Sound' | 'Stop';
-export type ShockMode = 'Random' | 'All';
-
-export interface AuthUser {
-  discordId: string;
-  name: string;
-  avatar: string | null;
-}
-
-export interface MeResponse {
-  linked: boolean;
-  allowRoomShocks: boolean;
-  roomMaxIntensity: number;
-  roomMaxDurationMs: number;
-}
-
-export interface LinkResponse {
-  openShockName: string;
-}
-
-export interface ShockerDto {
-  id: string;
-  name: string;
-  hubName: string;
-  enabled: boolean;
-}
-
-export interface WhitelistEntry {
-  discordId: string;
-}
+// SignalR event payloads (RoomHub) are not part of the REST API, so they stay hand-written here.
+// All Discord IDs are strings (64-bit snowflakes exceed JS's safe-integer range).
 
 export interface Participant {
   discordId: string;
@@ -50,13 +31,4 @@ export interface ShockDeliveredEvent {
 export interface ConsentChangedEvent {
   discordId: string;
   allowRoomShocks: boolean;
-}
-
-export interface ControlPayload {
-  targetDiscordId: string;
-  instanceId: string;
-  intensity: number;
-  duration: number;
-  type: ControlType;
-  mode: ShockMode;
 }

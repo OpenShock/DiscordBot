@@ -41,7 +41,7 @@ export default defineConfig(
   },
   {
     // The svelte-core submodule is not gitignored (it's a git submodule), so ignore it explicitly —
-    // it owns its own linting.
-    ignores: ['packages/**'],
+    // it owns its own linting. The hey-api client under src/lib/api/generated is generated code.
+    ignores: ['packages/**', 'src/lib/api/generated/**'],
   }
 );

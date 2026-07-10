@@ -6,6 +6,7 @@ namespace OpenShock.Activity.Api;
 // ---- Auth ----
 public sealed record TokenRequest(string Code);
 public sealed record DevTokenRequest(ulong DiscordId, string? Name);
+public sealed record DevTokenResponse(string Jwt);
 public sealed record TokenResponse(string DiscordAccessToken, string Jwt, AuthUserDto User);
 public sealed record AuthUserDto(string DiscordId, string Name, string? Avatar);
 
@@ -30,3 +31,4 @@ public sealed record ControlRequestDto(
     float Duration,
     ControlType Type,
     ShockMode Mode);
+public sealed record ControlResponseDto(byte Intensity, float DurationSeconds);
