@@ -27,6 +27,7 @@ jobs:
         with:
           registry: ghcr.io
           registry-path: ${{ github.repository_owner }}/discord-bot
+          dockerfile: DiscordBot/Dockerfile
           registry-username: ${{ github.actor }}
           registry-password: ${{ secrets.GITHUB_TOKEN }}
           push-image: ${{ github.ref_type == 'branch' && github.ref_protected && github.event_name != 'pull_request' }}
@@ -35,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
 
       - uses: ./.github/actions/container-build
         with:
@@ -45,18 +46,3 @@ jobs:
           registry-username: ${{ github.actor }}
           registry-password: ${{ secrets.GITHUB_TOKEN }}
           push-image: ${{ github.ref_type == 'branch' && github.ref_protected && github.event_name != 'pull_request' }}
-
-  deploy-production:
-    runs-on: ubuntu-latest
-    needs: [build, build-activity-api]
-    timeout-minutes: 2
-    if: ${{ github.ref_type == 'branch' && github.event_name != 'pull_request' && github.ref_name == 'master' }}
-    environment: production
-
-    steps:
-      - name: Call deployment webhook
-        shell: bash
-        env:
-          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
-        run: |
-          curl -X POST -d "" "$WEBHOOK_URL"
