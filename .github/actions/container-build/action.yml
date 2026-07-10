@@ -25,10 +25,10 @@ runs:
   using: composite
   steps:
     - name: Set up Docker Build
-      uses: docker/setup-buildx-action@v3
+      uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd  # v4.0.0
 
     - name: Log in to Container Registry
-      uses: docker/login-action@v3
+      uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121  # v4.1.0
       with:
         registry: ${{ inputs.registry }}
         username: ${{ inputs.registry-username }}
@@ -36,7 +36,7 @@ runs:
 
     - name: Extract metadata (tags, labels) for Docker
       id: meta
-      uses: docker/metadata-action@v5
+      uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf  # v6.0.0
       with:
         images: ${{ inputs.registry }}/${{ inputs.registry-path }}
         flavor: |
@@ -50,7 +50,7 @@ runs:
           type=semver,pattern={{major}}.{{minor}}.{{patch}}
 
     - name: Build and push Docker image
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f  # v7.1.0
       with:
         context: .
         file: ${{ inputs.dockerfile }}
