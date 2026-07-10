@@ -2,6 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 WORKDIR /src
 
 # Copy only project files first for layer-cached restore.
+COPY Directory.Build.props Directory.Packages.props ./
 COPY OpenShock.DiscordBot.Shared/*.csproj ./OpenShock.DiscordBot.Shared/
 COPY DiscordBot/*.csproj ./DiscordBot/
 RUN dotnet restore DiscordBot/DiscordBot.csproj
