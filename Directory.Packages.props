@@ -27,6 +27,8 @@
     <PackageVersion Include="Microsoft.Extensions.Logging.Configuration" Version="10.0.9" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.2" />
     <PackageVersion Include="OneOf" Version="3.0.271" />
+    <PackageVersion Include="OpenShock.Internal.AspNet" Version="0.1.1" />
+    <PackageVersion Include="OpenShock.Internal.Common" Version="0.1.1" />
     <PackageVersion Include="OpenShock.SDK.CSharp" Version="0.0.40" />
     <PackageVersion Include="Serilog" Version="4.3.1" />
     <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />

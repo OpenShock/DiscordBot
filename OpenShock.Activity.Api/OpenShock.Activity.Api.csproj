@@ -11,7 +11,14 @@
         <PackageReference Include="Microsoft.OpenApi" />
         <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" />
         <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" />
+        <PackageReference Include="OpenShock.Internal.AspNet" />
         <PackageReference Include="StackExchange.Redis" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- The shared OpenShockProblem / ExceptionProblem types live here; used across the controllers and
+             the error catalog, so make them available project-wide (ImplicitUsings is on). -->
+        <Using Include="OpenShock.Internal.Common.Problems" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -15,6 +16,7 @@ using OpenShock.Activity.Api.Problems;
 using OpenShock.Activity.Api.Realtime;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
 using OpenShock.DiscordBot.Services;
+using OpenShock.Internal.Common.ExceptionHandling;
 using Serilog;
 using StackExchange.Redis;
 
@@ -86,17 +88,9 @@ try
         builder.Services.AddSingleton<IRoomRegistry, InMemoryRoomRegistry>();
     }
 
-    signalR.AddJsonProtocol(o =>
-    {
-        o.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        o.PayloadSerializerOptions.Converters.Add(new UInt64StringConverter());
-    });
+    signalR.AddJsonProtocol(o => AddActivityJsonConverters(o.PayloadSerializerOptions));
 
-    builder.Services.AddControllers().AddJsonOptions(o =>
-    {
-        o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        o.JsonSerializerOptions.Converters.Add(new UInt64StringConverter());
-    });
+    builder.Services.AddControllers().AddJsonOptions(o => AddActivityJsonConverters(o.JsonSerializerOptions));
 
     // RFC 7807 problem responses, like the main OpenShock API. Model-validation failures are shaped as our
     // ValidationProblem so every error the client sees is an application/problem+json OpenShockProblem.
@@ -106,6 +100,14 @@ try
         options.InvalidModelStateResponseFactory = context =>
             new ValidationProblem(context.ModelState).ToObjectResult(context.HttpContext);
     });
+
+    // Unhandled exceptions are written as an application/problem+json ExceptionProblem by the shared
+    // OpenShockExceptionHandler, so failures stay on the same OpenShockProblem shape as every other error.
+    // It serializes with these options, matching how the controllers write JSON.
+    var problemJsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+    AddActivityJsonConverters(problemJsonOptions);
+    builder.Services.AddSingleton(problemJsonOptions);
+    builder.Services.AddExceptionHandler<OpenShockExceptionHandler>();
 
     // OpenAPI document (served at /openapi/v1.json) that drives the frontend's hey-api client generation.
     builder.Services.AddOpenApi(options =>
@@ -162,6 +164,17 @@ try
 
     app.UseSerilogRequestLogging();
 
+    // In development the exception handler logs the request body, which needs a rewindable stream.
+    if (app.Environment.IsDevelopment())
+    {
+        app.Use((context, next) =>
+        {
+            context.Request.EnableBuffering();
+            return next.Invoke();
+        });
+    }
+    app.UseExceptionHandler();
+
     // In production the Discord proxy makes every call same-origin, so CORS is only needed for local dev.
     if (app.Environment.IsDevelopment())
     {
@@ -189,6 +202,13 @@ catch (Exception ex)
 finally
 {
     Log.CloseAndFlush();
+}
+
+// Adds the converters that shape the API's JSON: enums as strings and ulong (Discord snowflakes) as strings.
+static void AddActivityJsonConverters(JsonSerializerOptions options)
+{
+    options.Converters.Add(new JsonStringEnumConverter());
+    options.Converters.Add(new UInt64StringConverter());
 }
 
 // Writes the health report as JSON; the middleware still maps the HTTP status (200 healthy / 503 not).
