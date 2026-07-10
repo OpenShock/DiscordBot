@@ -51,7 +51,8 @@ public sealed class UserController : ActivityControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error while validating OpenShock connection for {Server}", serverUri);
+            var safeServerForLog = serverUri.ToString().Replace("\r", string.Empty).Replace("\n", string.Empty);
+            _logger.LogError(e, "Error while validating OpenShock connection for {Server}", safeServerForLog);
             return Problem(AccountError.OpenShockUnreachable);
         }
 
