@@ -1,69 +1,33 @@
 @import 'tailwindcss';
+@import 'tw-animate-css';
+@import '@openshock/svelte-core/theme.css';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 
-/* OpenShock Activity — dark, high-voltage. System fonts only (Discord CSP blocks remote fonts). */
-@theme {
-	--color-ink-950: #07070b;
-	--color-ink-900: #0d0d14;
-	--color-ink-850: #12121b;
-	--color-ink-800: #171722;
-	--color-ink-700: #20202e;
-	--color-ink-600: #2b2b3d;
-	--color-ink-500: #3a3a50;
-
-	--color-mute: #9494a8;
-	--color-text: #ecedf5;
-
-	--color-shock-400: #ff5c86;
-	--color-shock-500: #ff2d6f;
-	--color-shock-600: #db1355;
-
-	--color-volt-400: #ffe867;
-	--color-volt-500: #ffd21f;
-
-	--color-good-500: #33d183;
-
-	--font-sans:
-		ui-sans-serif, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-	--font-mono: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace;
+/* Themed scrollbars — thin, rounded, floating thumb built from design tokens so it matches light and
+ * dark. The transparent border + padding-box clip insets the thumb so it reads as a pill, not a slab. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklch, var(--muted-foreground) 35%, transparent) transparent;
 }
 
-@layer base {
-	:root {
-		color-scheme: dark;
-	}
-
-	html,
-	body {
-		height: 100%;
-	}
-
-	body {
-		margin: 0;
-		background:
-			radial-gradient(1200px 600px at 80% -10%, rgba(255, 45, 111, 0.12), transparent 60%),
-			radial-gradient(900px 500px at -10% 110%, rgba(255, 210, 31, 0.07), transparent 55%),
-			var(--color-ink-950);
-		color: var(--color-text);
-		font-family: var(--font-sans);
-		-webkit-font-smoothing: antialiased;
-	}
-
-	::selection {
-		background: var(--color-shock-500);
-		color: white;
-	}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
 }
 
-@layer utilities {
-	.glow-shock {
-		box-shadow:
-			0 0 0 1px rgba(255, 45, 111, 0.4),
-			0 8px 30px -6px rgba(255, 45, 111, 0.45);
-	}
-	.tabular {
-		font-variant-numeric: tabular-nums;
-		font-family: var(--font-mono);
-	}
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: color-mix(in oklch, var(--muted-foreground) 35%, transparent);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: color-mix(in oklch, var(--muted-foreground) 55%, transparent);
 }

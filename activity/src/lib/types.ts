@@ -5,58 +5,58 @@ export type ControlType = 'Shock' | 'Vibrate' | 'Sound' | 'Stop';
 export type ShockMode = 'Random' | 'All';
 
 export interface AuthUser {
-	discordId: string;
-	name: string;
-	avatar: string | null;
+  discordId: string;
+  name: string;
+  avatar: string | null;
 }
 
 export interface MeResponse {
-	linked: boolean;
-	allowRoomShocks: boolean;
-	roomMaxIntensity: number;
-	roomMaxDurationMs: number;
+  linked: boolean;
+  allowRoomShocks: boolean;
+  roomMaxIntensity: number;
+  roomMaxDurationMs: number;
 }
 
 export interface LinkResponse {
-	openShockName: string;
+  openShockName: string;
 }
 
 export interface ShockerDto {
-	id: string;
-	name: string;
-	hubName: string;
-	enabled: boolean;
+  id: string;
+  name: string;
+  hubName: string;
+  enabled: boolean;
 }
 
 export interface WhitelistEntry {
-	discordId: string;
+  discordId: string;
 }
 
 export interface Participant {
-	discordId: string;
-	name: string;
-	allowRoomShocks: boolean;
+  discordId: string;
+  name: string;
+  allowRoomShocks: boolean;
 }
 
 export interface ShockDeliveredEvent {
-	fromDiscordId: string;
-	fromName: string;
-	toDiscordId: string;
-	intensity: number;
-	durationSeconds: number;
-	type: string;
+  fromDiscordId: string;
+  fromName: string;
+  toDiscordId: string;
+  intensity: number;
+  durationSeconds: number;
+  type: string;
 }
 
 export interface ConsentChangedEvent {
-	discordId: string;
-	allowRoomShocks: boolean;
+  discordId: string;
+  allowRoomShocks: boolean;
 }
 
 export interface ControlPayload {
-	targetDiscordId: string;
-	instanceId: string;
-	intensity: number;
-	duration: number;
-	type: ControlType;
-	mode: ShockMode;
+  targetDiscordId: string;
+  instanceId: string;
+  intensity: number;
+  duration: number;
+  type: ControlType;
+  mode: ShockMode;
 }

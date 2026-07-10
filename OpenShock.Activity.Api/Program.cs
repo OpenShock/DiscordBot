@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OpenShock.DiscordBot;
@@ -11,6 +12,7 @@ using OpenShock.Activity.Api.Endpoints;
 using OpenShock.Activity.Api.Realtime;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
 using OpenShock.DiscordBot.Services;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,10 +37,34 @@ builder.Services.AddDbContext<OpenShockDiscordContext>(options =>
 });
 
 builder.Services.AddScoped<IOpenShockBackendService, OpenShockBackendService>();
-builder.Services.AddSingleton<RoomRegistry>();
 builder.Services.AddSingleton<JwtTokenService>();
 builder.Services.AddHttpClient<DiscordOAuthService>();
-builder.Services.AddSignalR().AddJsonProtocol(o =>
+
+// Redis is optional. When configured it enables horizontal scaling: a shared presence store plus a
+// SignalR backplane so group broadcasts reach clients on every replica. Without it we fall back to
+// single-instance in-memory presence.
+var redisConfig = builder.Configuration.GetSection("Redis").Get<RedisConfig>();
+var signalR = builder.Services.AddSignalR();
+if (redisConfig is { IsConfigured: true })
+{
+    var redisOptions = redisConfig.ToConfigurationOptions();
+    var mux = ConnectionMultiplexer.Connect(redisOptions);
+    builder.Services.AddSingleton<IConnectionMultiplexer>(mux);
+    builder.Services.AddSingleton<RedisRoomRegistry>();
+    builder.Services.AddSingleton<IRoomRegistry>(sp => sp.GetRequiredService<RedisRoomRegistry>());
+    builder.Services.AddHostedService<RoomPresenceMaintenanceService>();
+    signalR.AddStackExchangeRedis(o =>
+    {
+        o.Configuration = redisOptions;
+        o.Configuration.ChannelPrefix = RedisChannel.Literal("activity");
+    });
+}
+else
+{
+    builder.Services.AddSingleton<IRoomRegistry, InMemoryRoomRegistry>();
+}
+
+signalR.AddJsonProtocol(o =>
 {
     o.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     o.PayloadSerializerOptions.Converters.Add(new UInt64StringConverter());

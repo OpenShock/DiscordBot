@@ -41,7 +41,7 @@ public static class UserEndpoints
             SelfResponse self;
             try
             {
-                var res = await client.GetSelf();
+                var res = await client.GetSelf(ct);
                 if (res.IsT1)
                     return Results.Json(new { error = "Authentication failed. Check your API token." }, statusCode: 401);
                 self = res.AsT0.Value;
@@ -96,7 +96,7 @@ public static class UserEndpoints
         });
 
         app.MapPut("/consent", async (ConsentRequest req, ClaimsPrincipal principal, OpenShockDiscordContext db,
-            RoomRegistry registry, IHubContext<RoomHub> hub, CancellationToken ct) =>
+            IHubContext<RoomHub, IRoomClient> hub, CancellationToken ct) =>
         {
             var id = principal.GetDiscordId();
             var u = await db.Users.FirstOrDefaultAsync(x => x.DiscordId == id, ct);
@@ -107,8 +107,8 @@ public static class UserEndpoints
             u.RoomMaxDurationMs = Math.Clamp(req.RoomMaxDurationMs, 300, 30000);
             await db.SaveChangesAsync(ct);
 
-            registry.UpdateConsent(id, u.AllowRoomShocks);
-            await hub.Clients.All.SendAsync(RoomEvents.ConsentChanged, new ConsentChangedEvent(id, u.AllowRoomShocks), ct);
+            // Consent lives in the DB (control + roster read it there); just notify live clients.
+            await hub.Clients.All.ConsentChanged(new ConsentChangedEvent(id, u.AllowRoomShocks));
 
             return Results.Ok(new MeResponse(true, u.AllowRoomShocks, u.RoomMaxIntensity, u.RoomMaxDurationMs));
         });

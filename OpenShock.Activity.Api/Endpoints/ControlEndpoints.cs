@@ -13,7 +13,7 @@ public static class ControlEndpoints
     public static void MapControlEndpoints(this IEndpointRouteBuilder app)
     {
         app.MapPost("/control", async (ControlRequestDto req, ClaimsPrincipal principal, OpenShockDiscordContext db,
-            IOpenShockBackendService control, RoomRegistry registry, IHubContext<RoomHub> hub, CancellationToken ct) =>
+            IOpenShockBackendService control, IRoomRegistry registry, IHubContext<RoomHub, IRoomClient> hub, CancellationToken ct) =>
         {
             var callerId = principal.GetDiscordId();
             var callerName = principal.GetDisplayName();
@@ -47,7 +47,7 @@ public static class ControlEndpoints
                     allowed = true;
                 }
                 else if (target.AllowRoomShocks &&
-                         registry.AreInSameRoom(req.InstanceId, callerId, req.TargetDiscordId))
+                         await registry.AreInSameRoomAsync(req.InstanceId, callerId, req.TargetDiscordId, ct))
                 {
                     allowed = true;
                     intensity = Math.Min(intensity, target.RoomMaxIntensity);
@@ -68,9 +68,9 @@ public static class ControlEndpoints
             return await result.Match<Task<IResult>>(
                 async _ =>
                 {
-                    await hub.Clients.Group(req.InstanceId).SendAsync(RoomEvents.ShockDelivered,
+                    await hub.Clients.Group(req.InstanceId).ShockDelivered(
                         new ShockDeliveredEvent(callerId, callerName, req.TargetDiscordId, intensity,
-                            durationMs / 1000f, req.Type.ToString()), ct);
+                            durationMs / 1000f, req.Type.ToString()));
                     return Results.Ok(new { intensity, durationSeconds = durationMs / 1000f });
                 },
                 notFound => Task.FromResult(Results.Json(

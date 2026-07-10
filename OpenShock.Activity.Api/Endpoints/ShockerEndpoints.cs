@@ -17,7 +17,7 @@ public static class ShockerEndpoints
             var user = await db.Users.FirstOrDefaultAsync(x => x.DiscordId == id, ct);
             if (user is null) return Results.BadRequest(new { error = "Link your account first." });
 
-            var res = await user.GetApiClient().GetOwnShockers();
+            var res = await user.GetApiClient().GetOwnShockers(ct);
             if (res.IsT1) return Results.Json(new { error = "OpenShock authentication failed." }, statusCode: 401);
 
             var enabled = (await db.UsersShockers.Where(x => x.User == id).Select(x => x.ShockerId).ToListAsync(ct))
@@ -38,7 +38,7 @@ public static class ShockerEndpoints
             var user = await db.Users.FirstOrDefaultAsync(x => x.DiscordId == id, ct);
             if (user is null) return Results.BadRequest(new { error = "Link your account first." });
 
-            var res = await user.GetApiClient().GetOwnShockers();
+            var res = await user.GetApiClient().GetOwnShockers(ct);
             if (res.IsT1) return Results.Json(new { error = "OpenShock authentication failed." }, statusCode: 401);
 
             var owned = res.AsT0.Value.SelectMany(h => h.Shockers).Select(s => s.Id).ToHashSet();

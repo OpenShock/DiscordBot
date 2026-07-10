@@ -16,6 +16,10 @@ inputs:
   push-image:
     required: true
     description: If true, pushes the image to the registry
+  dockerfile:
+    required: false
+    default: Dockerfile
+    description: Path to the Dockerfile to build (relative to the repo root)
 
 runs:
   using: composite
@@ -49,8 +53,9 @@ runs:
       uses: docker/build-push-action@v5
       with:
         context: .
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+        file: ${{ inputs.dockerfile }}
+        cache-from: type=gha,scope=${{ inputs.registry-path }}
+        cache-to: type=gha,mode=max,scope=${{ inputs.registry-path }}
         push: ${{ inputs.push-image }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
