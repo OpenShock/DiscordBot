@@ -22,5 +22,6 @@ COPY OpenShock.Activity.Api/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 COPY --from=build /app .
+COPY docker/appsettings.Container.json /app/appsettings.Container.json
 
 ENTRYPOINT ["/bin/ash", "/entrypoint.sh", "OpenShock.Activity.Api.dll"]

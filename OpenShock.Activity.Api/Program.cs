@@ -26,6 +26,7 @@ try
 
     // appsettings.Custom.json is mounted in production (see the gitops logging-config) and carries the
     // shared Serilog OpenTelemetry sink config; optional so local dev falls back to the console sink.
+    builder.Configuration.AddJsonFile("appsettings.Container.json", optional: true, reloadOnChange: false);
     builder.Configuration.AddJsonFile("appsettings.Custom.json", optional: true, reloadOnChange: false);
     builder.Configuration.AddUserSecrets(typeof(Program).Assembly, optional: true);
 
