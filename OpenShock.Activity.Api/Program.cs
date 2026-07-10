@@ -10,6 +10,7 @@ using OpenShock.DiscordBot;
 using OpenShock.Activity.Api;
 using OpenShock.Activity.Api.Auth;
 using OpenShock.Activity.Api.Config;
+using OpenShock.Activity.Api.Health;
 using OpenShock.Activity.Api.Problems;
 using OpenShock.Activity.Api.Realtime;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
@@ -52,7 +53,8 @@ try
     });
 
     // Liveness + DB readiness. AddDbContextCheck runs a lightweight CanConnect against Postgres.
-    builder.Services.AddHealthChecks()
+    // The Redis check is added below only when Redis is configured (distributed mode).
+    var healthChecks = builder.Services.AddHealthChecks()
         .AddDbContextCheck<OpenShockDiscordContext>("database");
 
     builder.Services.AddScoped<IOpenShockBackendService, OpenShockBackendService>();
@@ -69,6 +71,7 @@ try
         var redisOptions = redisConfig.ToConfigurationOptions();
         var mux = ConnectionMultiplexer.Connect(redisOptions);
         builder.Services.AddSingleton<IConnectionMultiplexer>(mux);
+        healthChecks.AddCheck<RedisHealthCheck>("redis");
         builder.Services.AddSingleton<RedisRoomRegistry>();
         builder.Services.AddSingleton<IRoomRegistry>(sp => sp.GetRequiredService<RedisRoomRegistry>());
         builder.Services.AddHostedService<RoomPresenceMaintenanceService>();

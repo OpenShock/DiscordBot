@@ -32,6 +32,7 @@
 <div class="min-h-screen flex flex-col">
   <header
     class="sticky top-0 z-20 border-b border-border/70 bg-ink-950/80 backdrop-blur px-4 sm:px-6 py-3 flex items-center gap-4"
+    style="padding-top: calc(0.75rem + env(safe-area-inset-top, 0px));"
   >
     <a href={resolve('/')} class="flex items-center gap-2">
       <img src={logo} alt="OpenShock" class="h-6 w-auto" />
