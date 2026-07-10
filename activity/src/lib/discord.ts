@@ -1,10 +1,11 @@
+import { PUBLIC_DISCORD_CLIENT_ID } from '$env/static/public';
 import { api } from '$lib/api';
 import { connectRealtime } from '$lib/realtime';
 import { setDiscordParticipants } from '$lib/stores/room.svelte';
 import { session } from '$lib/stores/session.svelte';
 import { DiscordSDK } from '@discord/embedded-app-sdk';
 
-const CLIENT_ID = import.meta.env.VITE_DISCORD_CLIENT_ID as string;
+const CLIENT_ID = PUBLIC_DISCORD_CLIENT_ID;
 
 export let discordSdk: DiscordSDK | null = null;
 

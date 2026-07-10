@@ -1,3 +1,4 @@
+import { PUBLIC_API_BASE } from '$env/static/public';
 import {
   applyRoster,
   markHubLeft,
@@ -9,7 +10,7 @@ import { session } from '$lib/stores/session.svelte';
 import type { ConsentChangedEvent, Participant, ShockDeliveredEvent } from '$lib/types';
 import * as signalR from '@microsoft/signalr';
 
-const BASE = (import.meta.env.VITE_API_BASE as string | undefined) ?? '/api';
+const BASE = PUBLIC_API_BASE;
 
 let connection: signalR.HubConnection | null = null;
 
