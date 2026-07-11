@@ -24,10 +24,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    outputs:
+      digest: ${{ steps.image.outputs.digest }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
 
       - uses: ./.github/actions/container-build
+        id: image
         with:
           registry: ghcr.io
           registry-path: ${{ github.repository_owner }}/discord-bot
@@ -39,10 +42,13 @@ jobs:
   build-activity-api:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    outputs:
+      digest: ${{ steps.image.outputs.digest }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
 
       - uses: ./.github/actions/container-build
+        id: image
         with:
           registry: ghcr.io
           registry-path: ${{ github.repository_owner }}/activity-api
@@ -50,3 +56,23 @@ jobs:
           registry-username: ${{ github.actor }}
           registry-password: ${{ secrets.GITHUB_TOKEN }}
           push-image: ${{ github.ref_type == 'branch' && github.ref_protected && github.event_name != 'pull_request' }}
+
+  # On master, tell the gitops repo to roll prod to the exact images we just pushed for this commit.
+  # We pin by immutable digest (a tag can be re-pointed); the short-SHA tag is still pushed for traceability.
+  deploy-prod:
+    runs-on: ubuntu-latest
+    needs: [build, build-activity-api]
+    if: ${{ github.ref_type == 'branch' && github.event_name != 'pull_request' && github.ref_name == 'master' }}
+    environment: production
+    steps:
+      - name: Send repository dispatch
+        uses: peter-evans/repository-dispatch@28959ce8df70de7be546dd1250a005dd32156697 # v4.0.1
+        with:
+          token: ${{ secrets.GITOPS_PAT }}
+          repository: openshock/kubernetes-cluster-gitops
+          event-type: update-discord-prod
+          client-payload: |
+            {
+              "bot_digest": "${{ needs.build.outputs.digest }}",
+              "activity_digest": "${{ needs.build-activity-api.outputs.digest }}"
+            }

@@ -21,6 +21,11 @@ inputs:
     default: Dockerfile
     description: Path to the Dockerfile to build (relative to the repo root)
 
+outputs:
+  digest:
+    description: Digest (sha256:...) of the pushed image manifest, for pinning deploys by digest
+    value: ${{ steps.build.outputs.digest }}
+
 runs:
   using: composite
   steps:
@@ -45,11 +50,13 @@ runs:
           type=raw,value={{branch}},enable=${{ github.ref_type == 'branch' && github.event_name != 'pull_request' }}
           type=ref,event=branch
           type=ref,event=pr
+          type=sha,prefix=
           type=semver,pattern={{major}},enable=${{ !startsWith(github.ref, 'refs/tags/v0') && !startsWith(github.ref, 'refs/tags/0') }}
           type=semver,pattern={{major}}.{{minor}}
           type=semver,pattern={{major}}.{{minor}}.{{patch}}
 
     - name: Build and push Docker image
+      id: build
       uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f  # v7.1.0
       with:
         context: .
