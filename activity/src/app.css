@@ -4,6 +4,16 @@
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 
+/* Safe-area insets. On mobile Discord overlays a native header on top of the activity webview and
+ * exposes the space it needs via --discord-safe-area-inset-*; env(safe-area-inset-*) stays 0 there.
+ * Prefer Discord's variable, fall back to env() for iOS + local dev. */
+:root {
+  --sait: var(--discord-safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --saib: var(--discord-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  --sail: var(--discord-safe-area-inset-left, env(safe-area-inset-left, 0px));
+  --sair: var(--discord-safe-area-inset-right, env(safe-area-inset-right, 0px));
+}
+
 /* Themed scrollbars — thin, rounded, floating thumb built from design tokens so it matches light and
  * dark. The transparent border + padding-box clip insets the thumb so it reads as a pill, not a slab. */
 * {
