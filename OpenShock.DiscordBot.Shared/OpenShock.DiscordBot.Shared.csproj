@@ -17,6 +17,7 @@
         <PackageReference Include="OneOf" />
         <PackageReference Include="OpenShock.Internal.Common" />
         <PackageReference Include="OpenShock.SDK.CSharp" />
+        <PackageReference Include="Serilog" />
     </ItemGroup>
 
 </Project>
