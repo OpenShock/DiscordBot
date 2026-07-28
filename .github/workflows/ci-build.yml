@@ -66,10 +66,10 @@ jobs:
     environment: production
     steps:
       - name: Send repository dispatch
-        env:
-          GH_TOKEN: ${{ secrets.GITOPS_PAT }}
-        run: |
-          gh api repos/openshock/kubernetes-cluster-gitops/dispatches \
-            -f event_type=update-discord-prod \
-            -F "client_payload[bot_digest]=${{ needs.build.outputs.digest }}" \
-            -F "client_payload[activity_digest]=${{ needs.build-activity-api.outputs.digest }}"
+        uses: OpenShock/actions/repository-dispatch@7e9cf5cd05af3d97a363d80adad50cfe50a273d0 # v1.0.0
+        with:
+          repo: openshock/kubernetes-cluster-gitops
+          event-type: update-discord-prod
+          client-payload: |
+            {"bot_digest": "${{ needs.build.outputs.digest }}", "activity_digest": "${{ needs.build-activity-api.outputs.digest }}"}
+          token: ${{ secrets.GITOPS_PAT }}
