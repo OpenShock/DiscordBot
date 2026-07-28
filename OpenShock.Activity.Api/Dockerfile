@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine@sha256:d8ee39817ca03a3757288e83c37ed73cc969a286c603b827c7cbe33add1c2d1c AS build
 WORKDIR /src
 
 # Copy only project files first for layer-cached restore.
@@ -13,7 +13,7 @@ COPY OpenShock.Activity.Api/ ./OpenShock.Activity.Api/
 RUN dotnet publish OpenShock.Activity.Api/OpenShock.Activity.Api.csproj -c Release -o /app --no-restore
 
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS final-api
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine@sha256:27b6b84beeede74fd16886177d360799c8e4299ceadfbd64eef57bafead7878a AS final-api
 WORKDIR /app
 
 RUN apk add --no-cache openssl
