@@ -29,3 +29,27 @@ updates:
       github-actions:
         patterns:
           - '*' # Group all updates together
+
+  # Check for Docker base image updates (bot)
+  - package-ecosystem: docker
+    directory: /DiscordBot
+    schedule:
+      interval: weekly
+      day: tuesday
+      time: '12:00'
+    groups:
+      docker:
+        patterns:
+          - '*' # Group all updates together
+
+  # Check for Docker base image updates (activity API)
+  - package-ecosystem: docker
+    directory: /OpenShock.Activity.Api
+    schedule:
+      interval: weekly
+      day: tuesday
+      time: '12:00'
+    groups:
+      docker:
+        patterns:
+          - '*' # Group all updates together
