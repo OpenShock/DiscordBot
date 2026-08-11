@@ -12,7 +12,7 @@
          mutable model (e.g. IOpenApiMediaType.Example has a setter). 3.x made that read-only, which breaks
          the generated code (https://github.com/dotnet/aspnetcore/issues/64317). 2.11.0 is patched against
          the vulnerable 2.0.0-preview.11 - 2.7.4 range (GHSA-v5pm-xwqc-g5wc / CVE-2026-49451). -->
-    <PackageVersion Include="Microsoft.OpenApi" Version="2.11.0" />
+    <PackageVersion Include="Microsoft.OpenApi" Version="3.9.0" />
     <PackageVersion Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="10.0.10" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.10" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.10" />
@@ -35,12 +35,12 @@
     <PackageVersion Include="OpenShock.SDK.CSharp" Version="0.0.42" />
     <PackageVersion Include="Serilog" Version="4.4.0" />
     <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
-    <PackageVersion Include="StackExchange.Redis" Version="3.0.17" />
+    <PackageVersion Include="StackExchange.Redis" Version="3.1.13" />
     <PackageVersion Include="Serilog.Extensions.Autofac.DependencyInjection" Version="5.0.0" />
     <PackageVersion Include="Serilog.Extensions.Hosting" Version="10.0.0" />
     <PackageVersion Include="Serilog.Settings.Configuration" Version="10.0.1" />
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1" />
-    <PackageVersion Include="Serilog.Sinks.Grafana.Loki" Version="9.0.1" />
+    <PackageVersion Include="Serilog.Sinks.Grafana.Loki" Version="9.0.2" />
     <PackageVersion Include="Serilog.Sinks.OpenTelemetry" Version="4.2.0" />
   </ItemGroup>
 </Project>
