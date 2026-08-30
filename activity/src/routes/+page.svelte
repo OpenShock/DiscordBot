@@ -40,9 +40,9 @@
         mode,
       });
       if (target.discordId === me) {
-        pushFeed(`You ${type.toLowerCase()}ed yourself — ${intensity}% for ${duration}s`, true);
+        pushFeed(`You ${typePast[type]} yourself — ${intensity}% for ${duration}s`, true);
       }
-      toast.success(`${type} sent to ${target.name}`);
+      toast.success(`${typeVerb[type]} sent to ${target.name}`);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Failed');
     } finally {
@@ -55,6 +55,12 @@
     Vibrate: 'Vibrate',
     Sound: 'Beep',
     Stop: 'Stop',
+  };
+  const typePast: Record<ControlType, string> = {
+    Shock: 'shocked',
+    Vibrate: 'vibrated',
+    Sound: 'beeped',
+    Stop: 'stopped',
   };
   const typeIcon = { Shock: Zap, Vibrate: Vibrate, Sound: Volume2 } as const;
 </script>
