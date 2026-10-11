@@ -69,6 +69,9 @@ public partial class OpenShockDiscordContext : DbContext
             entity.Property(e => e.RoomMaxDurationMs)
                 .HasDefaultValue(3000)
                 .HasColumnName("room_max_duration_ms");
+            entity.Property(e => e.WidgetAuthorized)
+                .HasDefaultValueSql("false")
+                .HasColumnName("widget_authorized");
             entity.Property(e => e.OpenshockId).HasColumnName("openshock_id");
         });
 

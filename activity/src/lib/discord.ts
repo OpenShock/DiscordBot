@@ -3,7 +3,7 @@ import { api } from '$lib/api';
 import { connectRealtime } from '$lib/realtime';
 import { setDiscordParticipants } from '$lib/stores/room.svelte';
 import { session } from '$lib/stores/session.svelte';
-import { DiscordSDK } from '@discord/embedded-app-sdk';
+import { DiscordSDK, type Types } from '@discord/embedded-app-sdk';
 
 const CLIENT_ID = PUBLIC_DISCORD_CLIENT_ID;
 
@@ -23,7 +23,9 @@ export async function initDiscord(): Promise<void> {
       response_type: 'code',
       state: '',
       prompt: 'none',
-      scope: ['identify'],
+      // application_identities.write lets the bot push stats to the user's Discord profile widget.
+      // The SDK's OAuthScopes union predates that scope (its RPC schema already knows it), hence the cast.
+      scope: ['identify', 'application_identities.write' as Types.OAuthScopes],
     });
 
     const token = await api.exchangeToken(code);

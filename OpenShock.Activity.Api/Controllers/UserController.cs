@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using OpenShock.Activity.Api.Problems;
 using OpenShock.Activity.Api.Realtime;
+using OpenShock.Activity.Api.Auth;
 using OpenShock.DiscordBot.OpenShockDiscordDb;
 using OpenShock.SDK.CSharp;
 using OpenShock.SDK.CSharp.Models;
@@ -64,7 +65,8 @@ public sealed class UserController : ActivityControllerBase
                 DiscordId = DiscordId,
                 OpenshockId = self.Id,
                 ApiKey = req.ApiToken,
-                ApiServer = serverUri.ToString()
+                ApiServer = serverUri.ToString(),
+                WidgetAuthorized = User.HasWidgetGrant()
             });
         }
         else
@@ -72,6 +74,7 @@ public sealed class UserController : ActivityControllerBase
             existing.OpenshockId = self.Id;
             existing.ApiKey = req.ApiToken;
             existing.ApiServer = serverUri.ToString();
+            existing.WidgetAuthorized |= User.HasWidgetGrant();
         }
 
         await _db.SaveChangesAsync(ct);
