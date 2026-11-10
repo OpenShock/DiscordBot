@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine@sha256:620e765fe18186c08399f7aa978f79f04b6bbf0ee1b3b8a91e2d5c9619e59da1 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine@sha256:5562fd626eec39f6f53218f9b7d7856ab7195d51d846568304fbe85071a3b6e6 AS build
 WORKDIR /src
 
 # Copy only project files first for layer-cached restore.
@@ -13,7 +13,7 @@ COPY DiscordBot/ ./DiscordBot/
 RUN dotnet publish DiscordBot/DiscordBot.csproj -c Release -o /publish --no-restore
 
 
-FROM mcr.microsoft.com/dotnet/runtime:10.0-alpine@sha256:216f4e2027da6ae806e0bc4b448669ac0faa00125908e308f31dd70598e58136
+FROM mcr.microsoft.com/dotnet/runtime:10.0-alpine@sha256:8ef0660a5ae5877915bc868a27aabf334c8b14c60aadbdd0fa058d81b87c52b6
 WORKDIR /app
 
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
