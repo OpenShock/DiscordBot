@@ -32,7 +32,7 @@
     <PackageVersion Include="OneOf" Version="3.0.271" />
     <PackageVersion Include="OpenShock.Internal.AspNet" Version="0.1.1" />
     <PackageVersion Include="OpenShock.Internal.Common" Version="0.1.1" />
-    <PackageVersion Include="OpenShock.SDK.CSharp" Version="0.0.42" />
+    <PackageVersion Include="OpenShock.SDK.CSharp" Version="0.0.45" />
     <PackageVersion Include="Serilog" Version="4.4.0" />
     <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
     <PackageVersion Include="StackExchange.Redis" Version="3.0.17" />
