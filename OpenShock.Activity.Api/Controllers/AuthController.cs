@@ -1,8 +1,10 @@
 using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OpenShock.Activity.Api.Auth;
 using OpenShock.Activity.Api.Problems;
+using OpenShock.DiscordBot.OpenShockDiscordDb;
 
 namespace OpenShock.Activity.Api.Controllers;
 
@@ -11,12 +13,15 @@ public sealed class AuthController : ActivityControllerBase
 {
     private readonly DiscordOAuthService _discord;
     private readonly JwtTokenService _jwt;
+    private readonly OpenShockDiscordContext _db;
     private readonly IHostEnvironment _env;
 
-    public AuthController(DiscordOAuthService discord, JwtTokenService jwt, IHostEnvironment env)
+    public AuthController(DiscordOAuthService discord, JwtTokenService jwt, OpenShockDiscordContext db,
+        IHostEnvironment env)
     {
         _discord = discord;
         _jwt = jwt;
+        _db = db;
         _env = env;
     }
 
@@ -32,7 +37,13 @@ public sealed class AuthController : ActivityControllerBase
         var identity = await _discord.ExchangeCodeAsync(req.Code, ct);
         if (identity is null) return Problem(AuthError.DiscordExchangeFailed);
 
-        var token = _jwt.Issue(identity.Id, identity.Name);
+        // The bot's widget sync picks flagged users up. Users who aren't linked yet get flagged from the
+        // session's widget claim in POST /link.
+        if (identity.WidgetAuthorized)
+            await _db.Users.Where(x => x.DiscordId == identity.Id && !x.WidgetAuthorized)
+                .ExecuteUpdateAsync(s => s.SetProperty(x => x.WidgetAuthorized, true), ct);
+
+        var token = _jwt.Issue(identity.Id, identity.Name, identity.WidgetAuthorized);
         return Ok(new TokenResponse(identity.AccessToken, token,
             new AuthUserDto(identity.Id.ToString(), identity.Name, identity.Avatar)));
     }

@@ -18,17 +18,21 @@ public sealed class JwtTokenService
 
     public SymmetricSecurityKey SigningKey { get; }
 
-    public string Issue(ulong discordId, string name)
+    public string Issue(ulong discordId, string name, bool widgetAuthorized = false)
     {
+        List<Claim> claims =
+        [
+            new("sub", discordId.ToString()),
+            new("name", name)
+        ];
+        if (widgetAuthorized) claims.Add(new Claim(ClaimsExtensions.WidgetClaim, "true"));
+
         var descriptor = new SecurityTokenDescriptor
         {
             Issuer = _cfg.Issuer,
             Audience = _cfg.Audience,
             Expires = DateTime.UtcNow.AddDays(_cfg.LifetimeDays),
-            Subject = new ClaimsIdentity([
-                new Claim("sub", discordId.ToString()),
-                new Claim("name", name)
-            ]),
+            Subject = new ClaimsIdentity(claims),
             SigningCredentials = new SigningCredentials(SigningKey, SecurityAlgorithms.HmacSha256)
         };
 

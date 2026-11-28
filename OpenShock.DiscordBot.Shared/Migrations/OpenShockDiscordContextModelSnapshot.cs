@@ -17,7 +17,7 @@ namespace OpenShock.DiscordBot.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.5")
+                .HasAnnotation("ProductVersion", "10.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -251,6 +251,12 @@ namespace OpenShock.DiscordBot.Migrations
                         .HasColumnType("smallint")
                         .HasDefaultValue((byte)30)
                         .HasColumnName("room_max_intensity");
+
+                    b.Property<bool>("WidgetAuthorized")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasColumnName("widget_authorized")
+                        .HasDefaultValueSql("false");
 
                     b.HasKey("DiscordId")
                         .HasName("users_pkey");

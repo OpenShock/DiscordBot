@@ -14,6 +14,7 @@ using Serilog;
 using System.Reflection;
 using OpenShock.DiscordBot.MessageHandler;
 using OpenShock.DiscordBot.Services.ProfanityDetector;
+using OpenShock.DiscordBot.Services.Widget;
 
 try
 {
@@ -101,6 +102,17 @@ builder.ConfigureServices((context, services) =>
         httpClient.BaseAddress = new Uri("https://api.openshock.app/");
     });
     services.AddHostedService<StatusTask>();
+
+    services.AddHttpClient<ControlStatsClient>(httpClient =>
+    {
+        httpClient.DefaultRequestHeaders.Add("User-Agent", "OpenShockDiscordBot/1.0");
+        httpClient.BaseAddress = discordBotConfig.Widget.ApiServer;
+        if (!string.IsNullOrWhiteSpace(discordBotConfig.Widget.AutomationToken))
+            httpClient.DefaultRequestHeaders.Add(ControlStatsClient.AutomationTokenHeader,
+                discordBotConfig.Widget.AutomationToken);
+    });
+    services.AddHttpClient<ProfileWidgetClient>();
+    services.AddHostedService<WidgetSyncService>();
 });
 
 

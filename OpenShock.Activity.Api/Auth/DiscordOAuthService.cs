@@ -5,12 +5,15 @@ using OpenShock.Activity.Api.Config;
 
 namespace OpenShock.Activity.Api.Auth;
 
-public sealed record DiscordIdentity(ulong Id, string Name, string AccessToken, string? Avatar);
+public sealed record DiscordIdentity(ulong Id, string Name, string AccessToken, string? Avatar, bool WidgetAuthorized);
 
 public sealed class DiscordOAuthService
 {
     private const string TokenUrl = "https://discord.com/api/oauth2/token";
     private const string MeUrl = "https://discord.com/api/users/@me";
+
+    /// <summary>OAuth2 scope that lets the bot write the user's profile widget (Game Stats Widget) data.</summary>
+    public const string WidgetScope = "application_identities.write";
 
     private readonly HttpClient _http;
     private readonly DiscordConfig _cfg;
@@ -61,10 +64,13 @@ public sealed class DiscordOAuthService
         var me = await meResponse.Content.ReadFromJsonAsync<DiscordMeResponse>(ct);
         if (me is null || !ulong.TryParse(me.Id, out var id)) return null;
 
-        return new DiscordIdentity(id, me.GlobalName ?? me.Username, token.AccessToken, me.Avatar);
+        var widgetAuthorized = token.Scope?.Split(' ').Contains(WidgetScope) ?? false;
+        return new DiscordIdentity(id, me.GlobalName ?? me.Username, token.AccessToken, me.Avatar, widgetAuthorized);
     }
 
-    private sealed record DiscordTokenResponse([property: JsonPropertyName("access_token")] string? AccessToken);
+    private sealed record DiscordTokenResponse(
+        [property: JsonPropertyName("access_token")] string? AccessToken,
+        [property: JsonPropertyName("scope")] string? Scope);
 
     private sealed record DiscordMeResponse(
         [property: JsonPropertyName("id")] string Id,

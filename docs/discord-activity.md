@@ -44,13 +44,48 @@ live in `appsettings.json`; secrets come from user-secrets (local) or env vars
 ## Discord Developer Portal
 
 1. **Activities → Enable** the embedded app.
-2. **OAuth2**: scope `identify`. Generate a **client secret** → `Activity:Discord:ClientSecret`.
+2. **OAuth2**: scopes `identify` and `application_identities.write` (the latter for the profile widget). Generate a **client secret** → `Activity:Discord:ClientSecret`.
 3. **Activities → URL Mappings** (two):
    - `/` → `activity.openshock.app` (frontend)
    - `/api` → `activity-api.openshock.app` (API)
 
    Discord **strips the mapping prefix**, so `/api/me` in the browser reaches the API as `/me`. The API
    deliberately serves its routes at root; the `/api` prefix is browser-side only.
+
+## Profile widget (Game Stats Widget)
+
+Users who open the Activity grant `application_identities.write`, which lets the bot write their OpenShock
+control stats to their Discord profile widget through the
+[Application Identity Profile API](https://docs.discord.com/developers/resources/application-identity-profile).
+The Activity API only records the grant (`users.widget_authorized`); the **bot** does the syncing.
+
+`WidgetSyncService` (bot) ticks every `bot:Widget:Interval` (default 1 min) and makes **one** request per tick
+to the OpenShock API's `POST /1/integrations/control-stats/changes`, authorized with an automation token
+granting `ControlStatsRead` (`bot:Widget:AutomationToken`, create it in the admin panel). The API answers with
+the lifetime totals of only those users whose stats changed since the previous cursor; users the bot sees for
+the first time get a full sync. A widget is only written when its data differs from what was last written,
+cleared when the user unlinks or re-links another account, and the grant is dropped if Discord answers `403`.
+Users linked to a server other than `bot:Widget:ApiServer` (default `https://api.openshock.app/`) are skipped.
+
+| Config (bot) | Notes |
+| --- | --- |
+| `bot:Widget:AutomationToken` | Automation token with `ControlStatsRead`. Sync is off when unset. **Secret.** |
+| `bot:Widget:ApiServer` | OpenShock API to read stats from. |
+| `bot:Widget:Interval` | Sync interval, e.g. `00:01:00`. |
+
+Map these **User Data** keys in the Developer Portal widget layout (all number dynamic fields; *received* is
+activity on the user's own shockers, *given* is what they sent, their own shockers included):
+
+| Key | Value |
+| --- | --- |
+| `shocks_received` / `shocks_given` | Shock count |
+| `vibrations_received` / `vibrations_given` | Vibrate count |
+| `sounds_received` / `sounds_given` | Sound count |
+| `shock_seconds_received` / `shock_seconds_given` | Total shock duration in seconds |
+| `max_shock_intensity_received` / `max_shock_intensity_given` | Highest shock intensity |
+
+Users who only ever used the bot's slash commands haven't granted the scope, so their widget stays empty
+until they open the Activity once.
 
 ## Hosting
 
